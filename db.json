@@ -1,0 +1,30 @@
+{
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Разработка главной страницы",
+      "description": "Создать адаптивный дизайн главной страницы",
+      "status": "todo",
+      "priority": "high",
+      "assignedTo": 1,
+      "projectId": 1,
+      "createdAt": "2025-04-09T10:00:00.000Z"
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "name": "Веб-сайт компании",
+      "description": "Редизайн корпоративного сайта",
+      "status": "active"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "Иван Петров",
+      "email": "ivan@example.com",
+      "role": "developer"
+    }
+  ]
+}

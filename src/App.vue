@@ -1,0 +1,77 @@
+<script setup lang="ts">
+import { RouterLink, RouterView } from 'vue-router'
+</script>
+
+<template>
+  <header class="header">
+    <nav>
+      <RouterLink to="/">Доска</RouterLink>
+      <RouterLink to="/projects">Проекты</RouterLink>
+    </nav>
+  </header>
+
+  <main>
+    <RouterView />
+  </main>
+</template>
+
+<style lang="scss">
+/* :root {
+  --primary-color: #4caf50;
+  --secondary-color: #2196f3;
+  --success-color: #4caf50;
+  --error-color: #f44336;
+  --text-primary: #333;
+  --text-secondary: #666;
+}
+ */
+body {
+  margin: 0;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+    'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--text-primary);
+  background-color: #f5f5f5;
+}
+
+.header {
+  padding: 1rem;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+
+  nav {
+    display: flex;
+    gap: 1rem;
+
+    a {
+      color: #666;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      transition: all 0.2s;
+
+      &:hover {
+        background-color: #e9ecef;
+      }
+
+      &.router-link-active {
+        color: var(--primary-color);
+        font-weight: 500;
+        background-color: #e8f5e9;
+      }
+    }
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>
