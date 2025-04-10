@@ -1,9 +1,16 @@
 $primary-color: #4caf50;
+$primary-color-hover: darken($primary-color, 5%);
 $secondary-color: #2196f3;
+$secondary-color-hover: darken($secondary-color, 5%);
 $success-color: #4caf50;
+$success-color-hover: darken($success-color, 5%);
 $error-color: #f44336;
+$error-color-hover: darken($error-color, 5%);
 $text-primary: #333;
 $text-secondary: #666;
+$background-primary: #f5f5f5;
+$background-secondary: #f8f9fa;
+$border-color: #e0e0e0;
 
 $spacing-xs: 0.25rem;
 $spacing-sm: 0.5rem;
