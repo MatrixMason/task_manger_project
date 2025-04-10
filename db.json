@@ -2,13 +2,33 @@
   "tasks": [
     {
       "id": 1,
-      "title": "Разработка главной страницы",
-      "description": "Создать адаптивный дизайн главной страницы",
+      "title": "Разработка дизайн-системы",
+      "description": "Создать базовые компоненты и документацию",
       "status": "todo",
       "priority": "high",
-      "assignedTo": 1,
-      "projectId": 1,
-      "createdAt": "2025-04-09T10:00:00.000Z"
+      "createdAt": "2025-04-10T10:00:00.000Z",
+      "updatedAt": "2025-04-10T10:00:00.000Z",
+      "assignedTo": 1
+    },
+    {
+      "id": 2,
+      "title": "Настройка CI/CD",
+      "description": "Настроить автоматическую сборку и деплой",
+      "status": "todo",
+      "priority": "medium",
+      "createdAt": "2025-04-10T11:00:00.000Z",
+      "updatedAt": "2025-04-10T11:00:00.000Z",
+      "assignedTo": 2
+    },
+    {
+      "id": 3,
+      "title": "Написание тестов",
+      "description": "Покрыть основной функционал unit-тестами",
+      "status": "done",
+      "priority": "low",
+      "createdAt": "2025-04-10T12:00:00.000Z",
+      "updatedAt": "2025-04-10T12:00:00.000Z",
+      "assignedTo": 1
     }
   ],
   "projects": [
@@ -17,6 +37,20 @@
       "name": "Веб-сайт компании",
       "description": "Редизайн корпоративного сайта",
       "status": "active"
+    },
+    {
+      "id": "fd13",
+      "name": "TEST",
+      "description": "счсчс",
+      "status": "active",
+      "teamMembers": []
+    },
+    {
+      "id": "315f",
+      "name": "123",
+      "description": "2222",
+      "status": "active",
+      "teamMembers": []
     }
   ],
   "users": [

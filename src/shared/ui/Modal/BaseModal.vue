@@ -55,13 +55,7 @@ watch(
 <template>
   <Transition name="modal">
     <div v-if="show" class="modal-wrapper">
-      <div
-        class="modal-overlay"
-        @click="
-          $emit('update:show', false)
-          $emit('close')
-        "
-      />
+      <div class="modal-overlay" @click="($emit('update:show', false), $emit('close'))" />
 
       <div class="modal" :class="size && `modal--${size}`">
         <header class="modal__header">
@@ -70,10 +64,7 @@ watch(
             variant="secondary"
             size="sm"
             class="modal__close"
-            @click="
-              $emit('update:show', false)
-              $emit('close')
-            "
+            @click="($emit('update:show', false), $emit('close'))"
           >
             ✕
           </BaseButton>
@@ -92,7 +83,7 @@ watch(
 </template>
 
 <style lang="scss" scoped>
-@import '@/app/styles/variables';
+@use '@/app/styles/variables' as v;
 
 .modal-wrapper {
   position: fixed;
@@ -103,7 +94,7 @@ watch(
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: $z-index-modal;
+  z-index: v.$z-index-modal;
 }
 
 .modal-overlay {
@@ -116,12 +107,12 @@ watch(
 .modal {
   position: relative;
   background: white;
-  border-radius: $border-radius-lg;
-  box-shadow: $shadow-lg;
+  border-radius: v.$border-radius-lg;
+  box-shadow: v.$shadow-lg;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
-  margin: $spacing-md;
+  margin: v.$spacing-md;
 
   // Размеры
   &--sm {
@@ -140,7 +131,7 @@ watch(
   }
 
   &__header {
-    padding: $spacing-md;
+    padding: v.$spacing-md;
     border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
@@ -154,16 +145,16 @@ watch(
   }
 
   &__content {
-    padding: $spacing-md;
+    padding: v.$spacing-md;
     overflow-y: auto;
   }
 
   &__footer {
-    padding: $spacing-md;
+    padding: v.$spacing-md;
     border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: flex-end;
-    gap: $spacing-sm;
+    gap: v.$spacing-sm;
   }
 }
 

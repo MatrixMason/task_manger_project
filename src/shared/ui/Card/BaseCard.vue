@@ -1,6 +1,6 @@
 <script setup lang="ts">
 defineOptions({
-  name: 'BaseCard'
+  name: 'BaseCard',
 })
 
 defineProps<{
@@ -10,25 +10,28 @@ defineProps<{
 
 <template>
   <div :class="['card', `card--${variant || 'default'}`]">
+    111
     <slot></slot>
   </div>
 </template>
 
 <style lang="scss" scoped>
-@import '@/app/styles/variables';
+@use '@/app/styles/variables' as *;
 
 .card {
-  background: var(--background-secondary);
+  background: $background-secondary;
   border-radius: $border-radius-md;
   padding: $spacing-md;
-  box-shadow: var(--shadow-sm);
+  box-shadow: $shadow-sm;
 
   &--hover {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
 
     &:hover {
       transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
+      box-shadow: $shadow-md;
     }
   }
 }

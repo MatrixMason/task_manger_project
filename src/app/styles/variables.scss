@@ -1,36 +1,55 @@
+@use "sass:color";
+
+// Colors
 $primary-color: #4caf50;
-$primary-color-hover: darken($primary-color, 5%);
+$primary-color-hover: color.adjust($primary-color, $lightness: -5%);
 $secondary-color: #2196f3;
-$secondary-color-hover: darken($secondary-color, 5%);
+$secondary-color-hover: color.adjust($secondary-color, $lightness: -5%);
 $success-color: #4caf50;
-$success-color-hover: darken($success-color, 5%);
+$success-color-hover: color.adjust($success-color, $lightness: -5%);
+$warning-color: #ff9800;
+$warning-color-hover: color.adjust($warning-color, $lightness: -5%);
 $error-color: #f44336;
-$error-color-hover: darken($error-color, 5%);
+$error-color-hover: color.adjust($error-color, $lightness: -5%);
+
+// Text colors
 $text-primary: #333;
 $text-secondary: #666;
+
+// Background colors
 $background-primary: #f5f5f5;
 $background-secondary: #f8f9fa;
+
+// Border
 $border-color: #e0e0e0;
 
+// Spacing
 $spacing-xs: 0.25rem;
 $spacing-sm: 0.5rem;
 $spacing-md: 1rem;
 $spacing-lg: 1.5rem;
 $spacing-xl: 2rem;
 
+// Breakpoints
 $breakpoint-sm: 576px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 992px;
 $breakpoint-xl: 1200px;
 
+// Border Radius
 $border-radius-sm: 4px;
 $border-radius-md: 8px;
 $border-radius-lg: 12px;
 
+// Shadows
 $shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 $shadow-md: 0 2px 4px rgba(0, 0, 0, 0.1);
 $shadow-lg: 0 4px 6px rgba(0, 0, 0, 0.1);
 
+// Z-Index
 $z-index-dropdown: 1000;
 $z-index-modal: 1050;
 $z-index-tooltip: 1100;
+
+// Make all variables available when using @use
+@forward "sass:color";

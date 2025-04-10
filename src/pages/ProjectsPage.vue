@@ -1,41 +1,98 @@
 <script setup lang="ts">
-import { ref, defineComponent } from 'vue'
-import type { Project } from '@/shared/api/types'
+import { ref, onMounted } from 'vue'
+import { useProjectsStore } from '@/entities/project/model/projects.store.ts'
+import BaseModal from '@/shared/ui/Modal/BaseModal.vue'
 
-defineComponent({
+defineOptions({
   name: 'ProjectsPage',
 })
 
-const projects = ref<Project[]>([
-  {
-    id: 1,
-    name: 'Веб-сайт компании',
-    description: 'Редизайн корпоративного сайта',
-    status: 'active',
-  },
-])
+const showCreateModal = ref(false)
+const formData = ref({
+  name: '',
+  description: '',
+})
+
+const projectsStore = useProjectsStore()
+const { projects, loading, error } = projectsStore
+
+// Fetch projects when component is mounted
+onMounted(async () => {
+  console.log('Fetching projects...')
+  try {
+    await projectsStore.fetchProjects()
+    console.log('Projects loaded:', projects)
+  } catch (e) {
+    console.error('Failed to fetch projects:', e)
+  }
+})
+
+async function handleCreateProject() {
+  try {
+    console.log('Creating project:', formData.value)
+    await projectsStore.createProject({
+      name: formData.value.name,
+      description: formData.value.description,
+      status: 'active',
+      teamMembers: [],
+    })
+    console.log('Project created successfully')
+    showCreateModal.value = false
+    formData.value = {
+      name: '',
+      description: '',
+    }
+    // Перезагружаем список проектов после создания
+    await projectsStore.fetchProjects()
+  } catch (e) {
+    console.error('Failed to create project:', e)
+  }
+}
 </script>
 
 <template>
   <div class="projects-page">
     <header class="projects-page__header">
       <h1>Проекты</h1>
-      <button class="btn btn--primary">Создать проект</button>
+      <button class="btn btn--primary" @click="showCreateModal = true">Создать проект</button>
     </header>
 
-    <div class="projects-list">
+    <div v-if="loading" class="projects-page__loading">Загрузка проектов...</div>
+
+    <div v-else-if="error" class="projects-page__error">
+      {{ error }}
+    </div>
+
+    <div v-else class="projects-list">
       <div v-for="project in projects" :key="project.id" class="project-card">
         <h3>{{ project.name }}</h3>
         <p>{{ project.description }}</p>
-        <span class="project-status" :class="'project-status--' + project.status">
-          {{ project.status }}
-        </span>
+        <div class="project-card__status">Статус: {{ project.status }}</div>
       </div>
     </div>
+
+    <BaseModal v-model:show="showCreateModal" title="Создать проект">
+      <form @submit.prevent="handleCreateProject">
+        <div class="form-group">
+          <label for="name">Название</label>
+          <input id="name" v-model="formData.name" type="text" required />
+        </div>
+        <div class="form-group">
+          <label for="description">Описание</label>
+          <textarea id="description" v-model="formData.description" required></textarea>
+        </div>
+        <div class="form-actions">
+          <button type="button" @click="showCreateModal = false">Отмена</button>
+          <button type="submit" class="btn--primary">Создать</button>
+        </div>
+      </form>
+    </BaseModal>
   </div>
 </template>
 
 <style lang="scss" scoped>
+@use '@/app/styles/variables' as v;
+
 .projects-page {
   padding: 2rem;
 
@@ -44,6 +101,17 @@ const projects = ref<Project[]>([
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+  }
+
+  &__loading {
+    text-align: center;
+    margin: 2rem 0;
+  }
+
+  &__error {
+    text-align: center;
+    margin: 2rem 0;
+    color: v.$error-color;
   }
 }
 
@@ -64,31 +132,24 @@ const projects = ref<Project[]>([
   }
 
   p {
-    color: var(--text-secondary);
+    color: v.$text-secondary;
     margin-bottom: 1rem;
+  }
+
+  &__status {
+    font-size: 0.875rem;
+    color: v.$text-secondary;
   }
 }
 
-.project-status {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.875rem;
+.form-group {
+  margin-bottom: 1rem;
+}
 
-  &--active {
-    background: var(--success-color);
-    color: white;
-  }
-
-  &--completed {
-    background: var(--secondary-color);
-    color: white;
-  }
-
-  &--archived {
-    background: var(--text-secondary);
-    color: white;
-  }
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1rem;
 }
 
 .btn {
@@ -99,7 +160,7 @@ const projects = ref<Project[]>([
   font-weight: 500;
 
   &--primary {
-    background: var(--primary-color);
+    background: v.$primary-color;
     color: white;
 
     &:hover {
