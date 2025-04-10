@@ -1,3 +1,17 @@
+<script setup lang="ts">
+import type { Task } from '@/entities/task/model/types'
+import TaskCard from '@/entities/task/components/TaskCard.vue'
+
+defineProps<{
+  title: string
+  tasks: Task[]
+}>()
+
+defineEmits<{
+  (e: 'taskClick', task: Task): void
+}>()
+</script>
+
 <template>
   <div class="kanban-column">
     <h2 class="kanban-column__title">{{ title }}</h2>
@@ -11,20 +25,6 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import type { Task } from '@/shared/api/types'
-import TaskCard from '@/entities/task/components/TaskCard.vue'
-
-defineProps<{
-  title: string
-  tasks: Task[]
-}>()
-
-defineEmits<{
-  (e: 'taskClick', task: Task): void
-}>()
-</script>
 
 <style lang="scss" scoped>
 .kanban-column {

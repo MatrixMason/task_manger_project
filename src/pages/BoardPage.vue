@@ -41,8 +41,8 @@ onMounted(() => {
   </div>
 </template>
 
-<style lang="scss">
-@import '@/app/styles/variables';
+<style lang="scss" scoped>
+@use '@/app/styles/variables' as v;
 
 .board-page {
   padding: $spacing-lg;
@@ -55,7 +55,7 @@ onMounted(() => {
     margin-bottom: $spacing-lg;
 
     h1 {
-      color: var(--text-primary);
+      color: $text-primary;
       margin: 0;
     }
   }
@@ -72,16 +72,16 @@ onMounted(() => {
     }
 
     &::-webkit-scrollbar-track {
-      background: var(--background-secondary);
+      background: $background-secondary;
       border-radius: $border-radius-sm;
     }
 
     &::-webkit-scrollbar-thumb {
-      background: var(--border-color);
+      background: $border-color;
       border-radius: $border-radius-sm;
 
       &:hover {
-        background: var(--text-secondary);
+        background: $text-secondary;
       }
     }
   }
@@ -96,11 +96,11 @@ onMounted(() => {
   transition: all 0.2s ease;
 
   &--primary {
-    background: var(--primary-color);
+    background: $primary-color;
     color: white;
 
     &:hover {
-      background: var(--primary-color-hover);
+      background: $primary-color-hover;
       transform: translateY(-1px);
     }
 

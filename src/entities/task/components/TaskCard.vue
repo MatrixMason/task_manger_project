@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { formatDate } from '@/shared/lib/dates/format'
 import type { Task } from '@/entities/task/model/types'
 import BaseCard from '@/shared/ui/Card/BaseCard.vue'
+import { formatDate } from '@/shared/lib/dates/format'
 
 defineOptions({
   name: 'TaskCard',
@@ -31,29 +31,29 @@ defineProps<{
 </template>
 
 <style lang="scss" scoped>
-@import '@/app/styles/variables';
+@use '@/app/styles/variables' as v;
 
 .task-card {
   :deep(.card) {
-    border: 1px solid var(--border-color);
+    border: 1px solid $border-color;
     transition: all 0.2s ease;
   }
 
   &[data-status='todo'] :deep(.card) {
     box-shadow:
-      -4px 0 0 var(--error-color),
+      -4px 0 0 $error-color,
       $shadow-sm;
   }
 
   &[data-status='in-progress'] :deep(.card) {
     box-shadow:
-      -4px 0 0 var(--warning-color),
+      -4px 0 0 $warning-color,
       $shadow-sm;
   }
 
   &[data-status='done'] :deep(.card) {
     box-shadow:
-      -4px 0 0 var(--success-color),
+      -4px 0 0 $success-color,
       $shadow-sm;
   }
 
@@ -61,19 +61,19 @@ defineProps<{
     :deep(.card) {
       &[data-status='todo'] {
         box-shadow:
-          -4px 0 0 var(--error-color),
+          -4px 0 0 $error-color,
           $shadow-md;
       }
 
       &[data-status='in-progress'] {
         box-shadow:
-          -4px 0 0 var(--warning-color),
+          -4px 0 0 $warning-color,
           $shadow-md;
       }
 
       &[data-status='done'] {
         box-shadow:
-          -4px 0 0 var(--success-color),
+          -4px 0 0 $success-color,
           $shadow-md;
       }
     }
@@ -87,12 +87,11 @@ defineProps<{
 
     h3 {
       margin: 0;
-      font-size: 1.1rem;
     }
   }
 
   &__description {
-    color: var(--text-secondary);
+    color: $text-secondary;
     margin-bottom: $spacing-md;
     font-size: 0.9rem;
   }
@@ -101,7 +100,6 @@ defineProps<{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.8rem;
   }
 
   &__priority {
@@ -111,28 +109,29 @@ defineProps<{
     text-transform: capitalize;
 
     &--high {
-      background: var(--error-color);
+      background: $error-color;
       color: white;
     }
 
     &--medium {
-      background: var(--secondary-color);
+      background: $secondary-color;
       color: white;
     }
 
     &--low {
-      background: var(--success-color);
+      background: $success-color;
       color: white;
     }
   }
 
   &__status {
-    color: var(--text-secondary);
+    color: $text-secondary;
     text-transform: capitalize;
   }
 
   &__date {
-    color: var(--text-secondary);
+    font-size: 0.8rem;
+    color: $text-secondary;
   }
 }
 </style>

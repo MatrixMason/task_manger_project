@@ -27,51 +27,64 @@ export const useTasksStore = defineStore('tasks', () => {
   })
 
   const tasksByStatus = computed(() => {
-    const result: Record<TaskStatus, Task[]> = {
+    const grouped: Record<TaskStatus, Task[]> = {
       todo: [],
       'in-progress': [],
       done: [],
     }
 
-    filteredTasks.value.forEach((task) => {
-      result[task.status].push(task)
+    tasks.value.forEach((task) => {
+      grouped[task.status].push(task)
     })
 
-    return result
+    return grouped
   })
 
   async function fetchTasks() {
+    loading.value = true
+    error.value = null
+
     try {
-      loading.value = true
-      error.value = null
-      tasks.value = await tasksApi.getTasks(filters.value)
+      tasks.value = await tasksApi.getTasks()
     } catch (e) {
-      error.value = 'Failed to fetch tasks'
-      console.error(e)
+      error.value = e instanceof Error ? e.message : 'Failed to fetch tasks'
+      console.error('Error fetching tasks:', e)
     } finally {
       loading.value = false
     }
   }
 
-  async function updateTaskStatus(taskId: number, newStatus: TaskStatus) {
+  async function createTask(task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) {
+    loading.value = true
+    error.value = null
+
     try {
-      loading.value = true
-      error.value = null
-      const updatedTask = await tasksApi.updateTask(taskId, { status: newStatus })
-      const index = tasks.value.findIndex((t) => t.id === taskId)
+      const newTask = await tasksApi.createTask(task)
+      tasks.value.push(newTask)
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : 'Failed to create task'
+      throw error.value
+    } finally {
+      loading.value = false
+    }
+  }
+
+  async function updateTask(id: number, updates: Partial<Task>) {
+    loading.value = true
+    error.value = null
+
+    try {
+      const updatedTask = await tasksApi.updateTask(id, updates)
+      const index = tasks.value.findIndex((t) => t.id === id)
       if (index !== -1) {
         tasks.value[index] = updatedTask
       }
     } catch (e) {
-      error.value = 'Failed to update task status'
-      console.error(e)
+      error.value = e instanceof Error ? e.message : 'Failed to update task'
+      throw error.value
     } finally {
       loading.value = false
     }
-  }
-
-  function setFilters(newFilters: TaskFilters) {
-    filters.value = newFilters
   }
 
   return {
@@ -82,7 +95,7 @@ export const useTasksStore = defineStore('tasks', () => {
     filteredTasks,
     tasksByStatus,
     fetchTasks,
-    updateTaskStatus,
-    setFilters,
+    createTask,
+    updateTask,
   }
 })

@@ -33,18 +33,18 @@ defineEmits<{
 </template>
 
 <style lang="scss" scoped>
-@import '@/app/styles/variables';
+@use '@/app/styles/variables' as v;
 
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border: none;
-  border-radius: $border-radius-md;
+  border-radius: v.$border-radius-md;
   cursor: pointer;
   font-weight: 500;
   transition: all 0.2s ease;
-  gap: $spacing-xs;
+  gap: v.$spacing-xs;
 
   &:disabled {
     opacity: 0.6;
@@ -52,17 +52,17 @@ defineEmits<{
   }
 
   &--sm {
-    padding: $spacing-xs $spacing-sm;
+    padding: v.$spacing-xs v.$spacing-sm;
     font-size: 0.875rem;
   }
 
   &--md {
-    padding: $spacing-sm $spacing-md;
+    padding: v.$spacing-sm v.$spacing-md;
     font-size: 1rem;
   }
 
   &--lg {
-    padding: $spacing-md $spacing-lg;
+    padding: v.$spacing-md v.$spacing-lg;
     font-size: 1.125rem;
   }
 
