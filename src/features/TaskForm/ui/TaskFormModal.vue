@@ -29,22 +29,34 @@ const isVisible = computed({
 async function handleSubmit(data: Partial<Task>) {
   try {
     if (props.task) {
-      await tasksStore.updateTask(props.task.id, data)
+      console.log('Updating task:', props.task.id, typeof props.task.id)
+      await tasksStore.updateTask(props.task.id, {
+        ...props.task,
+        ...data,
+        updatedAt: new Date().toISOString(),
+      })
     } else {
-      const taskData: Omit<Task, 'id' | 'createdAt' | 'updatedAt'> = {
+      const allTasks = (await tasksStore.fetchTasks()) || []
+      const maxId = Math.max(...allTasks.map((t) => Number(t.id)), 0)
+      const nextId = maxId + 1
+
+      const now = new Date().toISOString()
+      const taskData = {
         title: data.title || '',
         description: data.description || '',
         status: data.status || 'todo',
         priority: data.priority || 'medium',
-        assignedTo: data.assignedTo || 0, // Default to 0 if not assigned
-        projectId: data.projectId || 0, // Default to 0 if no project
+        assignedTo: data.assignedTo || 0,
+        projectId: data.projectId || 0,
+        createdAt: now,
+        updatedAt: now,
       }
-      await tasksStore.createTask(taskData)
+      await tasksStore.createTask(taskData, nextId)
     }
     emit('saved')
     emit('update:show', false)
-  } catch (e) {
-    console.error('Failed to save task:', e)
+  } catch (error) {
+    console.error('Failed to save task:', error)
   }
 }
 

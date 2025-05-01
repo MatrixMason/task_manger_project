@@ -46,20 +46,23 @@ export const useTasksStore = defineStore('tasks', () => {
 
     try {
       tasks.value = await tasksApi.getTasks()
+      return tasks.value
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to fetch tasks'
       console.error('Error fetching tasks:', e)
+      return []
     } finally {
       loading.value = false
     }
   }
 
-  async function createTask(task: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) {
+  async function createTask(task: Omit<Task, 'id'>, id: number) {
     loading.value = true
     error.value = null
 
     try {
-      const newTask = await tasksApi.createTask(task)
+      const taskWithId = { ...task, id }
+      const newTask = await tasksApi.createTask(taskWithId)
       tasks.value.push(newTask)
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to create task'
@@ -69,19 +72,30 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function updateTask(id: number, updates: Partial<Task>) {
+  async function updateTask(taskId: number, updates: Partial<Task>) {
     loading.value = true
     error.value = null
+    console.log('Store updateTask:', taskId, typeof taskId)
 
     try {
-      const updatedTask = await tasksApi.updateTask(id, updates)
-      const index = tasks.value.findIndex((t) => t.id === id)
+      const existingTask = tasks.value.find((t) => t.id === taskId)
+      if (!existingTask) {
+        throw new Error(`Task with ID ${taskId} not found`)
+      }
+
+      const updatedTask = await tasksApi.updateTask(taskId, {
+        ...existingTask,
+        ...updates,
+      })
+
+      const index = tasks.value.findIndex((t) => t.id === taskId)
       if (index !== -1) {
         tasks.value[index] = updatedTask
       }
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to update task'
-      throw error.value
+      console.error('Error updating task:', e)
+      throw e
     } finally {
       loading.value = false
     }
