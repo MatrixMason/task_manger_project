@@ -101,6 +101,22 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
+  async function deleteTask(id: number) {
+    loading.value = true
+    error.value = null
+
+    try {
+      await tasksApi.deleteTask(id)
+      tasks.value = tasks.value.filter(task => task.id !== id)
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : 'Failed to delete task'
+      console.error('Error deleting task:', e)
+      throw e
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     tasks,
     loading,
@@ -111,5 +127,6 @@ export const useTasksStore = defineStore('tasks', () => {
     fetchTasks,
     createTask,
     updateTask,
+    deleteTask,
   }
 })

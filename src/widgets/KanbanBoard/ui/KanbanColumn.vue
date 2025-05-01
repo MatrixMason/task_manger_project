@@ -7,9 +7,14 @@ defineProps<{
   tasks: Task[]
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'taskClick', task: Task): void
+  (e: 'taskDelete', taskId: number): void
 }>()
+
+function handleTaskDelete(taskId: number) {
+  emit('taskDelete', taskId)
+}
 </script>
 
 <template>
@@ -21,6 +26,7 @@ defineEmits<{
         :key="task.id"
         :task="task"
         @click="$emit('taskClick', task)"
+        @delete="handleTaskDelete"
       />
     </div>
   </div>

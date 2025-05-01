@@ -27,6 +27,11 @@ function handleTaskSaved() {
   showTaskForm.value = false
 }
 
+function handleTaskDelete(taskId: number) {
+  // No need to do anything here since the store already updates the UI
+  console.log('Task deleted:', taskId)
+}
+
 onMounted(() => {
   tasksStore.fetchTasks()
 })
@@ -49,6 +54,7 @@ onMounted(() => {
         :title="columnTitles[status]"
         :tasks="tasksStore.tasksByStatus[status]"
         @task-click="handleTaskClick"
+        @task-delete="handleTaskDelete"
       />
     </div>
 
