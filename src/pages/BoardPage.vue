@@ -3,9 +3,12 @@ import { ref, onMounted } from 'vue'
 import { useTasksStore } from '@/entities/task/model/tasks.store'
 import KanbanColumn from '@/widgets/KanbanBoard/ui/KanbanColumn.vue'
 import type { Task } from '@/shared/api/types'
+import TaskFormModal from '@/features/TaskForm/ui/TaskFormModal.vue'
 
 const tasksStore = useTasksStore()
 const showAddTask = ref(false)
+const showTaskForm = ref(false)
+const selectedTask = ref<Task | undefined>()
 
 const columnTitles = {
   todo: 'К выполнению',
@@ -15,6 +18,8 @@ const columnTitles = {
 
 function handleTaskClick(task: Task) {
   console.log('Task clicked:', task)
+  selectedTask.value = task
+  showTaskForm.value = true
 }
 
 onMounted(() => {
@@ -38,6 +43,8 @@ onMounted(() => {
         @task-click="handleTaskClick"
       />
     </div>
+
+    <TaskFormModal v-model:show="showAddTask" @saved="tasksStore.fetchTasks()" />
   </div>
 </template>
 

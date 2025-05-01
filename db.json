@@ -29,6 +29,15 @@
       "createdAt": "2025-04-10T12:00:00.000Z",
       "updatedAt": "2025-04-10T12:00:00.000Z",
       "assignedTo": 1
+    },
+    {
+      "id": "0239",
+      "title": "ТЕСТ",
+      "description": "ОПИСАНИЕ",
+      "status": "todo",
+      "priority": "low",
+      "assignedTo": 0,
+      "projectId": 0
     }
   ],
   "projects": [
@@ -49,6 +58,13 @@
       "id": "315f",
       "name": "123",
       "description": "2222",
+      "status": "active",
+      "teamMembers": []
+    },
+    {
+      "id": "a80c",
+      "name": "Konstantin",
+      "description": "111221",
       "status": "active",
       "teamMembers": []
     }
