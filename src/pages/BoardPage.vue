@@ -2,7 +2,8 @@
 import { ref, onMounted } from 'vue'
 import { useTasksStore } from '@/entities/task/model/tasks.store'
 import KanbanColumn from '@/widgets/KanbanBoard/ui/KanbanColumn.vue'
-import type { Task } from '@/shared/api/types'
+import UserFilter from '@/entities/task/components/UserFilter.vue'
+import type { Task } from '@/entities/task/model/types'
 import TaskFormModal from '@/features/TaskForm/ui/TaskFormModal.vue'
 
 const tasksStore = useTasksStore()
@@ -40,7 +41,10 @@ onMounted(() => {
 <template>
   <div class="board-page">
     <header class="board-page__header">
-      <h1>Канбан-доска. Задачи</h1>
+      <div class="board-page__title">
+        <h1>Канбан-доска. Задачи</h1>
+        <UserFilter @filter="userId => tasksStore.selectedUserId = userId" />
+      </div>
       <button class="btn btn--primary" @click="showAddTask = true">Добавить задачу</button>
     </header>
     <div v-if="tasksStore.loading" class="board-page__loading">Загрузка задач...</div>
@@ -52,7 +56,7 @@ onMounted(() => {
         v-for="status in ['todo', 'in-progress', 'done'] as const"
         :key="status"
         :title="columnTitles[status]"
-        :tasks="tasksStore.tasksByStatus[status]"
+        :tasks="tasksStore.filteredTasksByStatus[status]"
         @task-click="handleTaskClick"
         @task-delete="handleTaskDelete"
       />
@@ -75,6 +79,12 @@ onMounted(() => {
     justify-content: space-between;
     align-items: center;
     margin-bottom: $spacing-lg;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $spacing-lg;
 
     h1 {
       color: $text-primary;

@@ -4,7 +4,7 @@ export interface Task {
   description: string
   status: 'todo' | 'in-progress' | 'done'
   priority: 'low' | 'medium' | 'high'
-  assignedTo: number
+  assignedTo: number | null
   projectId: number
   createdAt: string
   updatedAt: string

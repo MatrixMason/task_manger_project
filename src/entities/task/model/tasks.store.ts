@@ -8,8 +8,14 @@ export const useTasksStore = defineStore('tasks', () => {
   const loading = ref(false)
   const error = ref<string | null>(null)
   const filters = ref<TaskFilters>({})
+  const selectedUserId = ref<number | null>(null)
 
   const filteredTasks = computed(() => {
+    if (!selectedUserId.value) return tasks.value
+    return tasks.value.filter((task) => task.assignedTo === selectedUserId.value)
+  })
+
+  /*   const filteredTasks = computed(() => {
     return tasks.value.filter((task) => {
       if (filters.value.status && task.status !== filters.value.status) return false
       if (filters.value.priority && task.priority !== filters.value.priority) return false
@@ -24,7 +30,7 @@ export const useTasksStore = defineStore('tasks', () => {
       }
       return true
     })
-  })
+  }) */
 
   const tasksByStatus = computed(() => {
     const grouped: Record<TaskStatus, Task[]> = {
@@ -40,12 +46,30 @@ export const useTasksStore = defineStore('tasks', () => {
     return grouped
   })
 
+  const filteredTasksByStatus = computed(() => {
+    const grouped: Record<TaskStatus, Task[]> = {
+      todo: [],
+      'in-progress': [],
+      done: [],
+    }
+
+    filteredTasks.value.forEach((task) => {
+      grouped[task.status].push(task)
+    })
+
+    return grouped
+  })
+
   async function fetchTasks() {
     loading.value = true
     error.value = null
 
     try {
-      tasks.value = await tasksApi.getTasks()
+      const apiTasks = await tasksApi.getTasks()
+      tasks.value = apiTasks.map((task) => ({
+        ...task,
+        deadline: null,
+      }))
       return tasks.value
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to fetch tasks'
@@ -107,7 +131,7 @@ export const useTasksStore = defineStore('tasks', () => {
 
     try {
       await tasksApi.deleteTask(id)
-      tasks.value = tasks.value.filter(task => task.id !== id)
+      tasks.value = tasks.value.filter((task) => task.id !== id)
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to delete task'
       console.error('Error deleting task:', e)
@@ -122,8 +146,10 @@ export const useTasksStore = defineStore('tasks', () => {
     loading,
     error,
     filters,
-    filteredTasks,
     tasksByStatus,
+    filteredTasksByStatus,
+    selectedUserId,
+    filteredTasks,
     fetchTasks,
     createTask,
     updateTask,
