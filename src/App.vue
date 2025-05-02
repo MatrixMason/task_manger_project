@@ -1,15 +1,13 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import { RouterView } from 'vue-router'
+import { useUsersStore } from '@/entities/user/model/users.store'
+import AppHeader from '@/widgets/Header/ui/AppHeader.vue'
+
+const usersStore = useUsersStore()
 </script>
 
 <template>
-  <header class="header">
-    <nav>
-      <RouterLink to="/">Доска</RouterLink>
-      <RouterLink to="/projects">Проекты</RouterLink>
-    </nav>
-  </header>
-
+  <AppHeader v-if="usersStore.isAuthenticated" />
   <main>
     <RouterView />
   </main>

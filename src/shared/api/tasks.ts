@@ -20,7 +20,7 @@ export const tasksApi = {
   async updateTask(id: number, task: Partial<Task>) {
     try {
       console.log('API updateTask:', id, typeof id)
-      const { data } = await api.put<Task>(`/tasks/${id}`, task)
+      const { data } = await api.patch<Task>(`/tasks/${id}`, task)
       return data
     } catch (error) {
       console.error('Failed to update task:', error)
