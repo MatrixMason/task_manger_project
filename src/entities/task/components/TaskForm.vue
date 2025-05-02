@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import type { Task, TaskPriority, TaskStatus, User } from '@/entities/task/model/types'
-import { ref } from 'vue'
+import type { Task, TaskPriority, TaskStatus } from '@/entities/task/model/types'
+import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useUsersStore } from '@/entities/user/model/users.store'
 import BaseInput from '@/shared/ui/Input/BaseInput.vue'
 import BaseSelect from '@/shared/ui/Select/BaseSelect.vue'
 import BaseTextarea from '@/shared/ui/Textarea/BaseTextarea.vue'
@@ -51,12 +53,12 @@ const priorityOptions = [
   { value: 'high', label: 'Высокий' },
 ]
 
-// Временные данные пользователей, позже заменим на реальные
-const users = ref<User[]>([
-  { id: 1, name: 'John Doe' },
-  { id: 2, name: 'Jane Smith' },
-  { id: 3, name: 'Bob Johnson' },
-])
+const usersStore = useUsersStore()
+const { users } = storeToRefs(usersStore)
+
+onMounted(async () => {
+  await usersStore.fetchUsers()
+})
 
 function handleSubmit() {
   emit('submit', formData.value)

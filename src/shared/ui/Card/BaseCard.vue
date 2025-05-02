@@ -10,7 +10,6 @@ defineProps<{
 
 <template>
   <div :class="['card', `card--${variant || 'default'}`]">
-    111
     <slot></slot>
   </div>
 </template>

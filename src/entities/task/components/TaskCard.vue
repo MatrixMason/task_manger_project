@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import type { Task } from '../model/types'
 import BaseCard from '@/shared/ui/Card/BaseCard.vue'
 import { formatDate } from '@/shared/lib/dates/format'
 import { useTasksStore } from '@/entities/task/model/tasks.store'
+import { useUsersStore } from '@/entities/user/model/users.store'
+import { storeToRefs } from 'pinia'
 
 defineOptions({
   name: 'TaskCard',
@@ -18,9 +20,23 @@ const emit = defineEmits<{
   (e: 'delete', taskId: number): void
 }>()
 
+const usersStore = useUsersStore()
+const { users } = storeToRefs(usersStore)
+
+const assignee = computed(() => {
+  if (!props.task.assignedTo) return null
+  return users.value.find((user) => String(user.id) === String(props.task.assignedTo))
+})
+
 const isOverdue = computed(() => {
   if (!props.task.deadline) return false
   return new Date(props.task.deadline) < new Date()
+})
+
+onMounted(async () => {
+  if (users.value.length === 0) {
+    await usersStore.fetchUsers()
+  }
 })
 
 const tasksStore = useTasksStore()
@@ -52,10 +68,6 @@ async function handleDelete(e: Event) {
           >
             до {{ formatDate(task.deadline) }}
           </span>
-          <span v-if="task.assignee" class="task-card__assignee">
-            <span class="material-icons">person</span>
-            {{ task.assignee.name }}
-          </span>
         </div>
       </div>
       <span :class="['task-card__priority', `task-card__priority--${task.priority}`]">
@@ -63,7 +75,13 @@ async function handleDelete(e: Event) {
       </span>
       <p class="task-card__description">{{ task.description }}</p>
       <div class="task-card__footer">
-        <span class="task-card__status">{{ task.status }}</span>
+        <div class="task-card__user">
+          <span v-if="assignee" class="task-card__assignee">
+            {{ assignee.name }}
+            <span class="task-card__role">- {{ assignee.role }}</span>
+          </span>
+          <span v-else class="task-card__no-user"> Не назначено </span>
+        </div>
         <button class="task-card__delete" @click="handleDelete" title="Удалить задачу">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
             <path
@@ -181,8 +199,12 @@ $scale-active: 0.95;
     align-items: center;
     gap: 0.25rem;
 
-    .material-icons {
-      font-size: 1rem;
+    &__role {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      background: var(--background-secondary);
+      padding: 2px 6px;
+      border-radius: 4px;
     }
   }
 

@@ -4,7 +4,8 @@ export type TaskPriority = 'low' | 'medium' | 'high'
 export interface User {
   id: number
   name: string
-  avatar?: string
+  email: string
+  role: string
 }
 
 export interface Task {
