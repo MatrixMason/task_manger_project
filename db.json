@@ -5,10 +5,11 @@
       "title": "Разработка дизайн-системы",
       "description": "Создать базовые компоненты и документацию",
       "status": "in-progress",
-      "priority": "low",
+      "priority": "medium",
       "createdAt": "2025-04-10T10:00:00.000Z",
-      "updatedAt": "2025-05-01T15:14:39.860Z",
-      "assignedTo": 1
+      "updatedAt": "2025-05-02T09:04:19.442Z",
+      "assignedTo": 1,
+      "deadline": "2025-11-11T11:01"
     },
     {
       "id": "2",
@@ -17,73 +18,31 @@
       "status": "todo",
       "priority": "medium",
       "createdAt": "2025-04-10T11:00:00.000Z",
-      "updatedAt": "2025-04-10T11:00:00.000Z",
-      "assignedTo": 2
+      "updatedAt": "2025-05-02T09:49:03.394Z",
+      "assignedTo": 2,
+      "deadline": "2025-05-02T16:52"
     },
     {
       "id": "3",
-      "title": "Написание тестов111",
+      "title": "Написание тестов",
       "description": "Покрыть основной функционал unit-тестами",
       "status": "done",
       "priority": "low",
       "createdAt": "2025-04-10T12:00:00.000Z",
-      "updatedAt": "2025-05-01T15:14:33.068Z",
+      "updatedAt": "2025-05-01T16:47:08.063Z",
       "assignedTo": 1
     },
     {
       "id": "4",
       "title": "ТЕСТ",
-      "description": "ОПИСАНИЕ",
+      "description": "ОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\n",
       "status": "todo",
       "createdAt": "2025-04-10T12:00:00.000Z",
-      "updatedAt": "2025-05-01T13:10:52.057Z",
+      "updatedAt": "2025-05-02T09:53:12.758Z",
       "priority": "low",
-      "assignedTo": 0,
-      "projectId": 0
-    },
-    {
-      "id": "5",
-      "title": "ТЕСТ3",
-      "description": "В Работе ввв",
-      "status": "in-progress",
-      "createdAt": "2025-04-10T12:00:00.000Z",
-      "updatedAt": "2025-05-01T13:11:04.205Z",
-      "priority": "medium",
-      "assignedTo": 0,
-      "projectId": 0
-    },
-    {
-      "id": "6",
-      "title": "fdfsddf",
-      "description": "dfsdsd",
-      "status": "todo",
-      "priority": "high",
-      "assignedTo": 0,
+      "assignedTo": 1,
       "projectId": 0,
-      "createdAt": "2025-05-01T13:20:12.069Z",
-      "updatedAt": "2025-05-01T13:20:12.069Z"
-    },
-    {
-      "id": "7",
-      "title": "4444",
-      "description": "4444",
-      "status": "in-progress",
-      "priority": "medium",
-      "assignedTo": 0,
-      "projectId": 0,
-      "createdAt": "2025-05-01T13:43:00.021Z",
-      "updatedAt": "2025-05-01T13:43:00.021Z"
-    },
-    {
-      "id": "8",
-      "title": "2222",
-      "description": "222",
-      "status": "todo",
-      "priority": "medium",
-      "assignedTo": 0,
-      "projectId": 0,
-      "createdAt": "2025-05-01T13:52:41.025Z",
-      "updatedAt": "2025-05-01T13:52:41.025Z"
+      "deadline": "2025-05-24T12:51"
     },
     {
       "id": "9",
@@ -91,21 +50,11 @@
       "description": "1111",
       "status": "todo",
       "priority": "high",
-      "assignedTo": 0,
+      "assignedTo": 1,
       "projectId": 0,
       "createdAt": "2025-05-01T14:21:13.436Z",
-      "updatedAt": "2025-05-01T14:21:13.436Z"
-    },
-    {
-      "id": "10",
-      "title": "1112222",
-      "description": "111222222222222222222222",
-      "status": "todo",
-      "priority": "high",
-      "assignedTo": 0,
-      "projectId": 0,
-      "createdAt": "2025-05-01T14:43:59.463Z",
-      "updatedAt": "2025-05-01T15:10:08.915Z"
+      "updatedAt": "2025-05-02T09:52:09.883Z",
+      "deadline": "2025-05-30T12:52"
     }
   ],
   "projects": [

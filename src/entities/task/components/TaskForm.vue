@@ -1,6 +1,10 @@
 <script setup lang="ts">
-import type { Task, TaskPriority, TaskStatus } from '@/entities/task/model/types'
+import type { Task, TaskPriority, TaskStatus, User } from '@/entities/task/model/types'
 import { ref } from 'vue'
+import BaseInput from '@/shared/ui/Input/BaseInput.vue'
+import BaseSelect from '@/shared/ui/Select/BaseSelect.vue'
+import BaseTextarea from '@/shared/ui/Textarea/BaseTextarea.vue'
+import BaseButton from '@/shared/ui/Button/BaseButton.vue'
 
 defineOptions({
   name: 'TaskForm',
@@ -20,8 +24,9 @@ type FormData = {
   description: string
   status: TaskStatus
   priority: TaskPriority
-  assignedTo?: number
+  assignedTo: number | null
   projectId?: number
+  deadline: string | null
 }
 
 const formData = ref<FormData>({
@@ -29,8 +34,9 @@ const formData = ref<FormData>({
   description: props.initialData?.description || '',
   status: props.initialData?.status || ('todo' as const),
   priority: props.initialData?.priority || ('medium' as const),
-  assignedTo: props.initialData?.assignedTo,
+  assignedTo: props.initialData?.assignedTo || null,
   projectId: props.initialData?.projectId,
+  deadline: props.initialData?.deadline || null,
 })
 
 const statusOptions = [
@@ -45,6 +51,13 @@ const priorityOptions = [
   { value: 'high', label: 'Высокий' },
 ]
 
+// Временные данные пользователей, позже заменим на реальные
+const users = ref<User[]>([
+  { id: 1, name: 'John Doe' },
+  { id: 2, name: 'Jane Smith' },
+  { id: 3, name: 'Bob Johnson' },
+])
+
 function handleSubmit() {
   emit('submit', formData.value)
 }
@@ -53,21 +66,18 @@ function handleSubmit() {
 <template>
   <form class="task-form" @submit.prevent="handleSubmit">
     <div class="form-group">
-      <label for="title">Название</label>
-      <input
-        id="title"
+      <BaseInput
         v-model="formData.title"
-        type="text"
+        label="Название"
         required
         placeholder="Введите название задачи"
       />
     </div>
 
     <div class="form-group">
-      <label for="description">Описание</label>
-      <textarea
-        id="description"
+      <BaseTextarea
         v-model="formData.description"
+        label="Описание"
         required
         placeholder="Введите описание задачи"
       />
@@ -75,29 +85,51 @@ function handleSubmit() {
 
     <div class="form-row">
       <div class="form-group">
-        <label for="status">Статус</label>
-        <select id="status" v-model="formData.status">
-          <option v-for="option in statusOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
+        <BaseSelect
+          v-model="formData.status"
+          label="Статус"
+          :options="statusOptions"
+          option-label="label"
+          option-value="value"
+        />
       </div>
 
       <div class="form-group">
-        <label for="priority">Приоритет</label>
-        <select id="priority" v-model="formData.priority">
-          <option v-for="option in priorityOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
+        <BaseSelect
+          v-model="formData.priority"
+          label="Приоритет"
+          :options="priorityOptions"
+          option-label="label"
+          option-value="value"
+        />
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <BaseInput v-model="formData.deadline" type="datetime-local" label="Дедлайн" />
+      </div>
+
+      <div class="form-group">
+        <BaseSelect
+          v-model="formData.assignedTo"
+          label="Исполнитель"
+          :options="users"
+          option-label="name"
+          option-value="id"
+          placeholder="Выберите исполнителя"
+          clearable
+        />
       </div>
     </div>
 
     <div class="form-actions">
-      <button type="button" class="btn btn--secondary" @click="$emit('cancel')">Отмена</button>
-      <button type="submit" class="btn btn--primary">
+      <BaseButton type="button" variant="secondary" size="md" @click="$emit('cancel')">
+        Отмена
+      </BaseButton>
+      <BaseButton type="submit" variant="primary" size="md">
         {{ props.initialData ? 'Сохранить' : 'Создать' }}
-      </button>
+      </BaseButton>
     </div>
   </form>
 </template>
@@ -146,8 +178,12 @@ function handleSubmit() {
   .form-actions {
     display: flex;
     justify-content: flex-end;
-    gap: v.$spacing-sm;
+    gap: v.$spacing-md;
     margin-top: v.$spacing-lg;
+
+    .material-icons {
+      font-size: 1.25rem;
+    }
   }
 }
 </style>

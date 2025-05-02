@@ -69,28 +69,39 @@ defineEmits<{
   &--primary {
     background: var(--primary-color);
     color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: 2px solid var(--primary-color);
+    transition: all 0.2s ease;
 
     &:hover:not(:disabled) {
-      background: var(--primary-color-hover);
+      background: white;
+      color: var(--primary-color);
       transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
 
     &:active:not(:disabled) {
       transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
   }
 
   &--secondary {
-    background: var(--secondary-color);
-    color: white;
+    background: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 
     &:hover:not(:disabled) {
-      background: var(--secondary-color-hover);
+      background: var(--background-color-hover);
+      border-color: var(--border-color-hover);
       transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
     &:active:not(:disabled) {
       transform: translateY(0);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     }
   }
 

@@ -17,7 +17,6 @@ const emit = defineEmits<{
   (e: 'update:show', value: boolean): void
 }>()
 
-// Обработка клавиши Escape
 function handleEscape(event: KeyboardEvent) {
   if (event.key === 'Escape' && props.show) {
     emit('update:show', false)
@@ -25,7 +24,6 @@ function handleEscape(event: KeyboardEvent) {
   }
 }
 
-// Блокировка скролла body
 function toggleBodyScroll(disable: boolean) {
   if (disable) {
     document.body.style.overflow = 'hidden'
@@ -43,7 +41,6 @@ onUnmounted(() => {
   toggleBodyScroll(false)
 })
 
-// Следим за изменением show
 watch(
   () => props.show,
   (newValue) => {
@@ -114,7 +111,6 @@ watch(
   flex-direction: column;
   margin: v.$spacing-md;
 
-  // Размеры
   &--sm {
     width: 100%;
     max-width: 400px;
@@ -158,7 +154,6 @@ watch(
   }
 }
 
-// Анимации
 .modal-enter-active,
 .modal-leave-active {
   transition: opacity 0.3s ease;

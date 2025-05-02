@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Task } from '@/entities/task/model/types'
+import { computed } from 'vue'
+import type { Task } from '../model/types'
 import BaseCard from '@/shared/ui/Card/BaseCard.vue'
 import { formatDate } from '@/shared/lib/dates/format'
 import { useTasksStore } from '@/entities/task/model/tasks.store'
@@ -16,6 +17,11 @@ const emit = defineEmits<{
   (e: 'click', task: Task): void
   (e: 'delete', taskId: number): void
 }>()
+
+const isOverdue = computed(() => {
+  if (!props.task.deadline) return false
+  return new Date(props.task.deadline) < new Date()
+})
 
 const tasksStore = useTasksStore()
 
@@ -38,7 +44,19 @@ async function handleDelete(e: Event) {
     <BaseCard variant="hover">
       <div class="task-card__header">
         <h3>{{ task.title }}</h3>
-        <span class="task-card__date">{{ formatDate(task.createdAt) }}</span>
+        <div class="task-card__meta">
+          <span
+            v-if="task.deadline"
+            class="task-card__deadline"
+            :class="{ 'task-card__deadline--overdue': isOverdue }"
+          >
+            до {{ formatDate(task.deadline) }}
+          </span>
+          <span v-if="task.assignee" class="task-card__assignee">
+            <span class="material-icons">person</span>
+            {{ task.assignee.name }}
+          </span>
+        </div>
       </div>
       <span :class="['task-card__priority', `task-card__priority--${task.priority}`]">
         {{ task.priority }}
@@ -48,7 +66,9 @@ async function handleDelete(e: Event) {
         <span class="task-card__status">{{ task.status }}</span>
         <button class="task-card__delete" @click="handleDelete" title="Удалить задачу">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
-            <path d="M17 4V6H3V4H6.5L7.5 3H12.5L13.5 4H17M4 19V7H16V19C16 20.1 15.1 21 14 21H6C4.9 21 4 20.1 4 19M19 16H21V18H19V16M19 9H21V14H19V9Z" />
+            <path
+              d="M17 4V6H3V4H6.5L7.5 3H12.5L13.5 4H17M4 19V7H16V19C16 20.1 15.1 21 14 21H6C4.9 21 4 20.1 4 19M19 16H21V18H19V16M19 9H21V14H19V9Z"
+            />
           </svg>
         </button>
       </div>
@@ -119,7 +139,9 @@ $scale-active: 0.95;
       background: rgba(211, 47, 47, 0.1);
       border-radius: 50%;
       transform: translate(-50%, -50%);
-      transition: width 0.3s ease, height 0.3s ease;
+      transition:
+        width 0.3s ease,
+        height 0.3s ease;
     }
 
     &:hover {
@@ -140,6 +162,33 @@ $scale-active: 0.95;
     &:active {
       transform: matrix(0.95, 0, 0, 0.95, 0, 0);
       box-shadow: 0 1px 2px rgba(211, 47, 47, 0.3);
+    }
+  }
+
+  &__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  &__deadline,
+  &__assignee,
+  &__date {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    .material-icons {
+      font-size: 1rem;
+    }
+  }
+
+  &__deadline {
+    &--overdue {
+      color: var(--error-color);
     }
   }
 
