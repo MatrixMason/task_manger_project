@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import BoardPage from '@/pages/BoardPage.vue'
 import ProjectsPage from '@/pages/ProjectsPage.vue'
-import LoginPage from '@/pages/LoginPage.vue'
 import { authMiddleware } from './middleware/auth'
 
 const router = createRouter({
@@ -9,18 +7,33 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      redirect: '/projects'
+    },
+    {
+      path: '/board',
       name: 'board',
-      component: BoardPage,
+      component: () => import('@/pages/BoardPage.vue'),
+      beforeEnter: authMiddleware,
     },
     {
       path: '/projects',
       name: 'projects',
       component: ProjectsPage,
+      beforeEnter: authMiddleware,
     },
     {
       path: '/login',
       name: 'login',
-      component: LoginPage,
+      component: () => import('@/pages/LoginPage.vue'),
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: () => import('@/pages/RegisterPage.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/projects'
     },
   ],
 })

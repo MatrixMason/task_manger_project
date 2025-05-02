@@ -20,7 +20,7 @@ async function handleLogout() {
   <header class="header">
     <nav class="nav">
       <router-link to="/projects" class="nav-link">Проекты</router-link>
-      <router-link to="/" class="nav-link">Доска задач</router-link>
+      <router-link to="/board" class="nav-link">Доска задач</router-link>
     </nav>
 
     <div class="user-actions">

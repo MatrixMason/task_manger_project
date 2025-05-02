@@ -4,7 +4,7 @@ import { useUsersStore } from '@/entities/user/model/users.store'
 export const authMiddleware: NavigationGuard = (to) => {
   const usersStore = useUsersStore()
 
-  const publicRoutes = ['/login']
+  const publicRoutes = ['/login', '/register']
 
   if (publicRoutes.includes(to.path)) {
     if (usersStore.isAuthenticated) {

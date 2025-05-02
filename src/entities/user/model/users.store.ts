@@ -2,6 +2,7 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { User } from './types'
 import { usersApi } from '@/shared/api/users'
+import type { RegisterData } from '@/shared/api/users'
 
 const TOKEN_KEY = 'auth_token'
 
@@ -19,7 +20,7 @@ export const useUsersStore = defineStore('users', () => {
     error.value = null
 
     try {
-      users.value = await usersApi.getUsers()
+      users.value = await usersApi.getAll()
     } catch (e) {
       error.value = 'Не удалось загрузить пользователей'
       console.error(e)
@@ -30,6 +31,23 @@ export const useUsersStore = defineStore('users', () => {
 
   async function getUserById(id: string | number) {
     return users.value.find((user) => user.id === id)
+  }
+
+  async function register(data: RegisterData) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const response = await usersApi.register(data)
+      currentUser.value = response.user
+      accessToken.value = response.accessToken
+      localStorage.setItem(TOKEN_KEY, response.accessToken)
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : 'Ошибка регистрации'
+      throw error.value
+    } finally {
+      isLoading.value = false
+    }
   }
 
   async function login(email: string, password: string) {
@@ -66,5 +84,6 @@ export const useUsersStore = defineStore('users', () => {
     getUserById,
     login,
     logout,
+    register,
   }
 })

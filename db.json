@@ -7,9 +7,9 @@
       "status": "in-progress",
       "priority": "medium",
       "createdAt": "2025-04-10T10:00:00.000Z",
-      "updatedAt": "2025-05-02T14:52:03.948Z",
-      "assignedTo": 2,
-      "deadline": "2025-05-02T23:58"
+      "updatedAt": "2025-05-02T15:35:38.080Z",
+      "assignedTo": 4,
+      "deadline": null
     },
     {
       "id": "2",
@@ -92,7 +92,7 @@
       "id": "1",
       "name": "Иван Петров",
       "email": "ivan@example.com",
-      "role": "developer"
+      "role": "admin"
     },
     {
       "id": "2",
@@ -104,7 +104,37 @@
       "id": "3",
       "name": "Петр Петров",
       "email": "petr.p@example.com",
-      "role": "developer"
+      "role": "manager"
+    },
+    {
+      "id": "4",
+      "name": "Ирина Дубцова",
+      "email": "irina.d@example.com",
+      "role": "designer"
+    },
+    {
+      "id": "77dd",
+      "name": "Константин",
+      "email": "li@ya.ru",
+      "role": "manager",
+      "createdAt": "2025-05-02T15:49:26.951Z",
+      "updatedAt": "2025-05-02T15:49:26.951Z"
+    },
+    {
+      "id": "5b27",
+      "name": "вывыыв",
+      "email": "ddsd@ids.ru",
+      "role": "manager",
+      "createdAt": "2025-05-02T15:50:38.425Z",
+      "updatedAt": "2025-05-02T15:50:38.425Z"
+    },
+    {
+      "id": "2eea",
+      "name": "TEST",
+      "email": "test@test.ru",
+      "role": "developer",
+      "createdAt": "2025-05-02T15:52:46.866Z",
+      "updatedAt": "2025-05-02T15:52:46.866Z"
     }
   ]
 }

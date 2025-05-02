@@ -51,7 +51,13 @@ async function handleSubmit() {
         {{ error }}
       </div>
 
-      <BaseButton type="submit" variant="primary" class="login-button"> Войти </BaseButton>
+      <BaseButton type="submit" variant="primary" class="login-button">
+        {{ usersStore.isLoading ? 'Вход...' : 'Войти' }}
+      </BaseButton>
+
+      <div class="form-footer">
+        Нет аккаунта? <router-link to="/register">Зарегистрироваться</router-link>
+      </div>
     </form>
   </div>
 </template>
@@ -92,5 +98,20 @@ async function handleSubmit() {
 
 .login-button {
   width: 100%;
+}
+
+.form-footer {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+
+  a {
+    color: var(--color-primary);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 </style>
