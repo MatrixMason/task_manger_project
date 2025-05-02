@@ -14,15 +14,6 @@ const usersStore = useUsersStore()
 </template>
 
 <style lang="scss">
-/* :root {
-  --primary-color: #4caf50;
-  --secondary-color: #2196f3;
-  --success-color: #4caf50;
-  --error-color: #f44336;
-  --text-primary: #333;
-  --text-secondary: #666;
-}
- */
 body {
   margin: 0;
   font-family:
@@ -38,6 +29,9 @@ body {
   padding: 1rem;
   background-color: #f8f9fa;
   border-bottom: 1px solid #e9ecef;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
   nav {
     display: flex;
@@ -60,6 +54,12 @@ body {
         background-color: #e8f5e9;
       }
     }
+  }
+
+  .user-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 }
 
