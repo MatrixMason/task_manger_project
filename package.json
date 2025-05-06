@@ -14,7 +14,9 @@
     "server": "json-server --watch db.json --port 3000"
   },
   "dependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "axios": "^1.8.4",
+    "bcryptjs": "^3.0.2",
     "json-server": "^1.0.0-beta.3",
     "pinia": "^3.0.1",
     "sass": "^1.86.3",

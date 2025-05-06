@@ -38,7 +38,7 @@ async function handleSubmit(data: Partial<Task>) {
     } else {
       const allTasks = (await tasksStore.fetchTasks()) || []
       const maxId = Math.max(...allTasks.map((t) => Number(t.id)), 0)
-      const nextId = maxId + 1
+      const nextId = String(maxId + 1)
 
       const now = new Date().toISOString()
       const taskData = {
@@ -50,6 +50,7 @@ async function handleSubmit(data: Partial<Task>) {
         projectId: data.projectId || 0,
         createdAt: now,
         updatedAt: now,
+        deadline: data.deadline || null,
       }
       await tasksStore.createTask(taskData, nextId)
     }

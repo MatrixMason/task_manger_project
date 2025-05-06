@@ -1,33 +1,97 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useProjectsStore } from '@/entities/project/model/projects.store.ts'
+import { useProjectsStore } from '@/entities/project/model/projects.store'
+import { useTasksStore } from '@/entities/task/model/tasks.store'
+import type { Project, CreateProjectData } from '@/entities/project/model/types'
+import ProjectFormModal from '@/features/ProjectForm/ui/ProjectFormModal.vue'
+import BaseButton from '@/shared/ui/Button/BaseButton.vue'
 import BaseModal from '@/shared/ui/Modal/BaseModal.vue'
+import BaseInput from '@/shared/ui/Input/BaseInput.vue'
+import BaseTextarea from '@/shared/ui/Textarea/BaseTextarea.vue'
+import ProjectFilters from '@/features/ProjectFilters/ui/ProjectFilters.vue'
+import ConfirmModal from '@/shared/ui/Modal/ConfirmModal.vue'
 
-defineOptions({
-  name: 'ProjectsPage',
-})
-
+const projectsStore = useProjectsStore()
+const tasksStore = useTasksStore()
+const showProjectModal = ref(false)
+const editingProject = ref<Project | undefined>()
 const showCreateModal = ref(false)
+const showDeleteConfirm = ref(false)
+const projectToDelete = ref<Project | null>(null)
 const formData = ref({
   name: '',
   description: '',
 })
 
-const projectsStore = useProjectsStore()
-const { projects, loading, error } = projectsStore
-
-// Fetch projects when component is mounted
 onMounted(async () => {
-  console.log('Fetching projects...')
-  try {
-    await projectsStore.fetchProjects()
-    console.log('Projects loaded:', projects)
-  } catch (e) {
-    console.error('Failed to fetch projects:', e)
-  }
+  await Promise.all([projectsStore.fetchProjects(), tasksStore.fetchTasks()])
 })
 
-async function handleCreateProject() {
+async function handleDeleteProject(project: Project) {
+  projectToDelete.value = project
+  showDeleteConfirm.value = true
+}
+
+async function confirmDeleteProject() {
+  if (!projectToDelete.value) return
+  
+  try {
+    await projectsStore.deleteProject(projectToDelete.value.id)
+    projectToDelete.value = null
+  } catch (error) {
+    console.error('Failed to delete project:', error)
+  }
+}
+
+async function handleCreateProject(data: CreateProjectData) {
+  try {
+    await projectsStore.createProject({
+      ...data,
+      status: 'active',
+      teamMembers: [],
+      description: data.description || ''
+    })
+  } catch (error) {
+    console.error('Failed to create project:', error)
+  }
+}
+
+async function handleEditProject(data: CreateProjectData) {
+  if (!editingProject.value) return
+
+  try {
+    await projectsStore.updateProject(editingProject.value.id, {
+      ...data
+    })
+    editingProject.value = undefined
+  } catch (error) {
+    console.error('Failed to update project:', error)
+  }
+}
+
+function openCreateModal() {
+  editingProject.value = undefined
+  showProjectModal.value = true
+}
+
+function openEditModal(project: Project) {
+  editingProject.value = project
+  showProjectModal.value = true
+}
+
+function getProjectTasks(projectId: string | number) {
+  return tasksStore.tasks.filter((task) => String(task.projectId) === String(projectId))
+}
+
+function handleProjectSubmit(data: CreateProjectData) {
+  if (editingProject.value) {
+    handleEditProject(data)
+  } else {
+    handleCreateProject(data)
+  }
+}
+
+async function handleCreateProjectForm() {
   try {
     console.log('Creating project:', formData.value)
     await projectsStore.createProject({
@@ -35,6 +99,8 @@ async function handleCreateProject() {
       description: formData.value.description,
       status: 'active',
       teamMembers: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     })
     console.log('Project created successfully')
     showCreateModal.value = false
@@ -42,7 +108,7 @@ async function handleCreateProject() {
       name: '',
       description: '',
     }
-    // Перезагружаем список проектов после создания
+
     await projectsStore.fetchProjects()
   } catch (e) {
     console.error('Failed to create project:', e)
@@ -52,120 +118,273 @@ async function handleCreateProject() {
 
 <template>
   <div class="projects-page">
-    <header class="projects-page__header">
-      <h1>Проекты</h1>
-      <button class="btn btn--primary" @click="showCreateModal = true">Создать проект</button>
+    <header class="projects-header">
+      <div class="header-title">
+        <h1>Проекты</h1>
+        <button class="btn btn--primary" @click="openCreateModal">Создать проект</button>
+      </div>
+      <ProjectFilters
+        :initial-filters="projectsStore.filters"
+        @filter="filters => {
+          projectsStore.filters.search = filters.search
+          projectsStore.filters.status = filters.status
+          projectsStore.filters.sortBy = filters.sortBy
+        }"
+      />
     </header>
 
-    <div v-if="loading" class="projects-page__loading">Загрузка проектов...</div>
-
-    <div v-else-if="error" class="projects-page__error">
-      {{ error }}
+    <div v-if="projectsStore.loading" class="loading">Загрузка проектов...</div>
+    <div v-else-if="projectsStore.error" class="error">
+      {{ projectsStore.error }}
     </div>
-
     <div v-else class="projects-list">
-      <div v-for="project in projects" :key="project.id" class="project-card">
-        <h3>{{ project.name }}</h3>
-        <p>{{ project.description }}</p>
-        <div class="project-card__status">Статус: {{ project.status }}</div>
+      <div v-for="project in projectsStore.filteredProjects" :key="project.id" class="project-card" :class="{ 'project-card--loading': projectsStore.loading }">
+        <div class="project-info">
+          <h3>{{ project.name }}</h3>
+          <p>{{ project.description }}</p>
+
+          <!-- задачи проекта -->
+          <div class="project-tasks">
+            <h4>Задачи проекта:</h4>
+            <div v-if="getProjectTasks(project.id).length" class="tasks-list">
+              <div v-for="task in getProjectTasks(project.id)" :key="task.id" class="task-item">
+                <span class="task-title">{{ task.title }}</span>
+                <span :class="['task-status', `status-${task.status}`]">{{ task.status }}</span>
+              </div>
+            </div>
+            <p v-else class="no-tasks">Нет задач</p>
+          </div>
+        </div>
+        <div class="project-actions">
+          <BaseButton variant="secondary" size="sm" @click="openEditModal(project)" :disabled="projectsStore.loading">
+            <span v-if="projectsStore.loading" class="loading-spinner"></span>
+            <span v-else>Редактировать</span>
+          </BaseButton>
+          <BaseButton variant="danger" size="sm" @click="handleDeleteProject(project)" :disabled="projectsStore.loading">
+            <span v-if="projectsStore.loading" class="loading-spinner"></span>
+            <span v-else>Удалить</span>
+          </BaseButton>
+        </div>
       </div>
     </div>
 
+    <ProjectFormModal
+      v-model:show="showProjectModal"
+      :project="editingProject"
+      :submit-label="editingProject ? 'Сохранить изменения' : 'Создать проект'"
+      @submit="handleProjectSubmit"
+    />
+
     <BaseModal v-model:show="showCreateModal" title="Создать проект">
-      <form @submit.prevent="handleCreateProject">
+      <form @submit.prevent="handleCreateProjectForm">
         <div class="form-group">
-          <label for="name">Название</label>
-          <input id="name" v-model="formData.name" type="text" required />
+          <BaseInput
+            id="name"
+            v-model="formData.name"
+            label="Название"
+            required
+          />
         </div>
         <div class="form-group">
-          <label for="description">Описание</label>
-          <textarea id="description" v-model="formData.description" required></textarea>
+          <BaseTextarea
+            id="description"
+            v-model="formData.description"
+            label="Описание"
+            required
+            rows="4"
+          />
         </div>
         <div class="form-actions">
-          <button type="button" @click="showCreateModal = false">Отмена</button>
-          <button type="submit" class="btn--primary">Создать</button>
+          <BaseButton type="button" variant="secondary" size="md" @click="showCreateModal = false">
+            Отмена
+          </BaseButton>
+          <BaseButton type="submit" variant="primary" size="md">
+            Создать
+          </BaseButton>
         </div>
       </form>
     </BaseModal>
   </div>
+  <ConfirmModal
+    v-model:show="showDeleteConfirm"
+    title="Удаление проекта"
+    :message="`Вы действительно хотите удалить проект '${projectToDelete?.name}'? Это действие нельзя отменить.`"
+    confirm-label="Удалить"
+    @confirm="confirmDeleteProject"
+  />
 </template>
 
 <style lang="scss" scoped>
 @use '@/app/styles/variables' as v;
 
 .projects-page {
-  padding: 2rem;
+  padding: v.$spacing-lg;
+}
 
-  &__header {
+.projects-header {
+  margin-bottom: v.$spacing-lg;
+
+  .header-title {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-  }
+    margin-bottom: v.$spacing-md;
 
-  &__loading {
-    text-align: center;
-    margin: 2rem 0;
-  }
+    .btn {
+      padding: v.$spacing-sm v.$spacing-md;
+      border: none;
+      border-radius: v.$border-radius-sm;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s;
 
-  &__error {
-    text-align: center;
-    margin: 2rem 0;
-    color: v.$error-color;
+      &--primary {
+        background: v.$primary-color;
+        color: white;
+
+        &:hover {
+          background: v.$primary-color-hover;
+        }
+      }
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: v.$text-primary;
+      margin: 0;
+    }
   }
 }
 
 .projects-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  gap: v.$spacing-lg;
 }
 
 .project-card {
-  background: white;
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: relative;
+  
+  &--loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: v.$border-radius-lg;
+    z-index: 1;
+  }
+  background: v.$background-secondary;
+  border-radius: v.$border-radius-lg;
+  padding: v.$spacing-lg;
+  box-shadow: v.$shadow-sm;
 
   h3 {
-    margin: 0 0 0.5rem;
+    margin: 0 0 v.$spacing-sm;
+    color: v.$text-primary;
   }
 
   p {
+    margin: 0;
     color: v.$text-secondary;
-    margin-bottom: 1rem;
-  }
-
-  &__status {
     font-size: 0.875rem;
-    color: v.$text-secondary;
   }
 }
 
-.form-group {
-  margin-bottom: 1rem;
+.project-info {
+  margin-bottom: v.$spacing-lg;
+
+  h4 {
+    margin: v.$spacing-lg 0 v.$spacing-sm;
+    font-size: 1rem;
+    color: v.$text-primary;
+  }
 }
 
-.form-actions {
+.project-tasks {
+  margin-top: v.$spacing-lg;
+  padding-top: v.$spacing-lg;
+  border-top: 1px solid v.$border-color;
+}
+
+.tasks-list {
+  display: flex;
+  flex-direction: column;
+  gap: v.$spacing-sm;
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: v.$spacing-sm;
+  background: v.$background-primary;
+  border-radius: v.$border-radius-sm;
+  font-size: 0.875rem;
+}
+
+.task-title {
+  color: v.$text-primary;
+}
+
+.task-status {
+  padding: v.$spacing-xs v.$spacing-sm;
+  border-radius: v.$border-radius-sm;
+  font-size: 0.75rem;
+
+  &.status-todo {
+    background: v.$status-todo;
+    color: v.$text-primary;
+  }
+
+  &.status-in-progress {
+    background: v.$status-in-progress;
+    color: v.$text-primary;
+  }
+
+  &.status-done {
+    background: v.$status-done;
+    color: v.$text-primary;
+  }
+}
+
+.no-tasks {
+  color: v.$text-secondary;
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
+.loading-spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.project-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1rem;
+  gap: v.$spacing-md;
 }
 
-.btn {
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  font-weight: 500;
+.loading,
+.error {
+  text-align: center;
+  padding: v.$spacing-xl;
+}
 
-  &--primary {
-    background: v.$primary-color;
-    color: white;
-
-    &:hover {
-      filter: brightness(0.95);
-    }
-  }
+.error {
+  color: v.$error-color;
 }
 </style>

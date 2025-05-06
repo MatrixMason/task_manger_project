@@ -7,20 +7,22 @@
       "status": "in-progress",
       "priority": "medium",
       "createdAt": "2025-04-10T10:00:00.000Z",
-      "updatedAt": "2025-05-02T15:35:38.080Z",
+      "updatedAt": "2025-05-02T17:45:07.549Z",
       "assignedTo": 4,
-      "deadline": null
+      "deadline": null,
+      "projectId": "1ed7"
     },
     {
       "id": "2",
       "title": "Настройка CI/CD",
       "description": "Настроить автоматическую сборку и деплой",
       "status": "todo",
-      "priority": "medium",
+      "priority": "high",
       "createdAt": "2025-04-10T11:00:00.000Z",
-      "updatedAt": "2025-05-02T13:46:29.453Z",
-      "assignedTo": 1,
-      "deadline": "2025-05-02T16:52"
+      "updatedAt": "2025-05-02T17:47:27.066Z",
+      "assignedTo": "77dd",
+      "deadline": "2025-05-24T20:47",
+      "projectId": "1ed7"
     },
     {
       "id": "3",
@@ -29,9 +31,10 @@
       "status": "done",
       "priority": "low",
       "createdAt": "2025-04-10T12:00:00.000Z",
-      "updatedAt": "2025-05-02T11:11:57.920Z",
+      "updatedAt": "2025-05-02T17:36:41.780Z",
       "assignedTo": 2,
-      "deadline": "2025-05-02T20:17"
+      "deadline": "2025-05-30T20:36",
+      "projectId": "1ed7"
     },
     {
       "id": "4",
@@ -39,11 +42,11 @@
       "description": "ОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\n",
       "status": "todo",
       "createdAt": "2025-04-10T12:00:00.000Z",
-      "updatedAt": "2025-05-02T09:53:12.758Z",
+      "updatedAt": "2025-05-02T17:35:52.969Z",
       "priority": "low",
-      "assignedTo": 1,
-      "projectId": 0,
-      "deadline": "2025-05-24T12:51"
+      "assignedTo": 2,
+      "projectId": 1,
+      "deadline": "2025-05-17T20:35"
     },
     {
       "id": "9",
@@ -52,10 +55,33 @@
       "status": "todo",
       "priority": "high",
       "assignedTo": 3,
-      "projectId": 0,
+      "projectId": 4,
       "createdAt": "2025-05-01T14:21:13.436Z",
-      "updatedAt": "2025-05-02T14:52:24.576Z",
-      "deadline": null
+      "updatedAt": "2025-05-02T17:36:11.525Z",
+      "deadline": "2025-05-10T20:36"
+    },
+    {
+      "id": 10,
+      "title": "Задача1",
+      "description": "Описание",
+      "status": "in-progress",
+      "priority": "high",
+      "assignedTo": "e209",
+      "projectId": 1,
+      "createdAt": "2025-05-02T17:35:03.603Z",
+      "updatedAt": "2025-05-02T17:35:03.603Z"
+    },
+    {
+      "id": "11",
+      "title": "Задача 999",
+      "description": "Описание",
+      "status": "in-progress",
+      "priority": "low",
+      "assignedTo": "2eea",
+      "projectId": "1ed7",
+      "createdAt": "2025-05-02T17:49:48.577Z",
+      "updatedAt": "2025-05-02T17:49:48.577Z",
+      "deadline": "2025-05-03T20:49"
     }
   ],
   "projects": [
@@ -63,7 +89,8 @@
       "id": "1",
       "name": "Веб-сайт компании",
       "description": "Редизайн корпоративного сайта",
-      "status": "active"
+      "status": "active",
+      "updatedAt": "2025-05-02T17:53:52.241Z"
     },
     {
       "id": "2",
@@ -85,6 +112,15 @@
       "description": "111221",
       "status": "active",
       "teamMembers": []
+    },
+    {
+      "id": "1ed7",
+      "name": "ТЕСТ 4",
+      "description": "вывывывыв",
+      "status": "active",
+      "teamMembers": [],
+      "createdAt": "2025-05-02T17:23:43.501Z",
+      "updatedAt": "2025-05-02T17:23:48.613Z"
     }
   ],
   "users": [
@@ -135,6 +171,15 @@
       "role": "developer",
       "createdAt": "2025-05-02T15:52:46.866Z",
       "updatedAt": "2025-05-02T15:52:46.866Z"
+    },
+    {
+      "id": "e209",
+      "name": "Ivan",
+      "email": "test1@test.ru",
+      "role": "developer",
+      "password": "$2b$10$m6fU2tZ33wk.uvsZn0y1ouezwwAnSRBu9.AOAlYQUWViTqBNpEa26",
+      "createdAt": "2025-05-02T16:44:25.141Z",
+      "updatedAt": "2025-05-02T16:44:25.144Z"
     }
   ]
 }
