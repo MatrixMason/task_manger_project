@@ -80,7 +80,7 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function createTask(task: Omit<Task, 'id'>, id: number) {
+  async function createTask(task: Omit<Task, 'id'>, id: string) {
     loading.value = true
     error.value = null
 
@@ -96,7 +96,7 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function updateTask(taskId: number, updates: Partial<Task>) {
+  async function updateTask(taskId: string, updates: Partial<Task>) {
     loading.value = true
     error.value = null
     console.log('Store updateTask:', taskId, typeof taskId)
@@ -125,7 +125,7 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function deleteTask(id: number) {
+  async function deleteTask(id: string) {
     loading.value = true
     error.value = null
 

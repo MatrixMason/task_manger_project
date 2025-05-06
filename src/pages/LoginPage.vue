@@ -14,8 +14,8 @@ const error = ref('')
 
 async function handleSubmit() {
   try {
-    await usersStore.login(email.value, password.value)
-    router.push('/projects')
+    await usersStore.login({ email: email.value, password: password.value })
+    router.push('/board')
   } catch {
     error.value = 'Неверный email или пароль'
   }

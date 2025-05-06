@@ -1,6 +1,6 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
-import type { User } from './types'
+import type { User, LoginCredentials } from './types'
 import { usersApi } from '@/shared/api/users'
 import type { RegisterData } from '@/shared/api/users'
 
@@ -50,12 +50,12 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
-  async function login(email: string, password: string) {
+  async function login(credentials: LoginCredentials) {
     isLoading.value = true
     error.value = null
 
     try {
-      const response = await usersApi.login(email, password)
+      const response = await usersApi.login(credentials)
       currentUser.value = response.user
       accessToken.value = response.accessToken
       localStorage.setItem(TOKEN_KEY, response.accessToken)

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-type OptionValue = string | number | null
+type OptionValue = string | number | null | undefined
 
 interface GenericOption {
   [key: string]: string | number | boolean | undefined

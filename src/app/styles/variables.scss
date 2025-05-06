@@ -42,5 +42,10 @@ $z-index-dropdown: 1000;
 $z-index-modal: 1050;
 $z-index-tooltip: 1100;
 
+// Task status colors
+$status-todo: #e3f2fd;
+$status-in-progress: #fff3e0;
+$status-done: #e8f5e9;
+
 // Make all variables available when using @use
 @forward 'sass:color';

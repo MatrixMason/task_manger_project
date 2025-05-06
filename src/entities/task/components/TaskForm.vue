@@ -3,6 +3,7 @@ import type { Task, TaskPriority, TaskStatus } from '@/entities/task/model/types
 import { ref, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useUsersStore } from '@/entities/user/model/users.store'
+import { useProjectsStore } from '@/entities/project/model/projects.store'
 import BaseInput from '@/shared/ui/Input/BaseInput.vue'
 import BaseSelect from '@/shared/ui/Select/BaseSelect.vue'
 import BaseTextarea from '@/shared/ui/Textarea/BaseTextarea.vue'
@@ -27,7 +28,7 @@ type FormData = {
   status: TaskStatus
   priority: TaskPriority
   assignedTo: number | null
-  projectId?: number
+  projectId: number | undefined
   deadline: string | null
 }
 
@@ -54,10 +55,14 @@ const priorityOptions = [
 ]
 
 const usersStore = useUsersStore()
+const projectsStore = useProjectsStore()
 const { users } = storeToRefs(usersStore)
 
 onMounted(async () => {
-  await usersStore.fetchUsers()
+  await Promise.all([
+    usersStore.fetchUsers(),
+    projectsStore.fetchProjects()
+  ])
 })
 
 function handleSubmit() {
@@ -105,6 +110,14 @@ function handleSubmit() {
           option-value="value"
         />
       </div>
+    </div>
+
+    <div class="form-group">
+      <BaseSelect
+        v-model="formData.projectId"
+        label="Проект"
+        :options="[{ value: null, label: 'Без проекта' }, ...projectsStore.projects.map(p => ({ value: p.id, label: p.name }))]"
+      />
     </div>
 
     <div class="form-row">

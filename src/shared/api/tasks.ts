@@ -7,17 +7,17 @@ export const tasksApi = {
     return data
   },
 
-  async getTaskById(id: number) {
+  async getTaskById(id: string) {
     const { data } = await api.get<Task>(`/tasks/${id}`)
     return data
   },
 
-  async createTask(task: Omit<Task, 'id'> & { id: number }) {
+  async createTask(task: Omit<Task, 'id'> & { id: string }) {
     const { data } = await api.post<Task>('/tasks', task)
     return data
   },
 
-  async updateTask(id: number, task: Partial<Task>) {
+  async updateTask(id: string, task: Partial<Task>) {
     try {
       console.log('API updateTask:', id, typeof id)
       const { data } = await api.patch<Task>(`/tasks/${id}`, task)
@@ -28,7 +28,7 @@ export const tasksApi = {
     }
   },
 
-  async deleteTask(id: number) {
+  async deleteTask(id: string) {
     await api.delete(`/tasks/${id}`)
   },
 }

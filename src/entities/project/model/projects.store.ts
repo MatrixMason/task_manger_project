@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import type { Project } from './types'
 import { projectsApi } from '@/shared/api/projects'
 
@@ -7,6 +7,37 @@ export const useProjectsStore = defineStore('projects', () => {
   const projects = ref<Project[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
+  const filters = ref({
+    search: '',
+    status: 'all',
+    sortBy: 'updatedAt'
+  })
+
+  const filteredProjects = computed(() => {
+    return projects.value
+      .filter(project => {
+        // Фильтр по поиску
+        const matchesSearch = project.name.toLowerCase().includes(filters.value.search.toLowerCase()) ||
+          project.description.toLowerCase().includes(filters.value.search.toLowerCase())
+
+        // Фильтр по статусу
+        const matchesStatus = filters.value.status === 'all' || project.status === filters.value.status
+
+        return matchesSearch && matchesStatus
+      })
+      .sort((a, b) => {
+        // Сортировка
+        switch (filters.value.sortBy) {
+          case 'name':
+            return a.name.localeCompare(b.name)
+          case 'createdAt':
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          case 'updatedAt':
+          default:
+            return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+        }
+      })
+  })
 
   async function fetchProjects() {
     loading.value = true
@@ -43,6 +74,24 @@ export const useProjectsStore = defineStore('projects', () => {
     }
   }
 
+  async function deleteProject(id: number) {
+    loading.value = true
+    error.value = null
+    console.log('Store: Deleting project:', id)
+
+    try {
+      await projectsApi.deleteProject(id)
+      console.log('Store: Project deleted:', id)
+      projects.value = projects.value.filter(p => p.id !== id)
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : 'Failed to delete project'
+      console.error('Store: Error deleting project:', e)
+      throw error.value
+    } finally {
+      loading.value = false
+    }
+  }
+
   async function updateProject(id: number, updates: Partial<Project>) {
     loading.value = true
     error.value = null
@@ -68,8 +117,11 @@ export const useProjectsStore = defineStore('projects', () => {
     projects,
     loading,
     error,
+    filters,
+    filteredProjects,
     fetchProjects,
     createProject,
     updateProject,
+    deleteProject,
   }
 })
