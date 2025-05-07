@@ -86,10 +86,11 @@ function handleChange(event: Event) {
   }
 
   &__input {
-    padding: 0.75rem;
+    padding: 8px 12px;
     border: 1px solid var(--border-color);
     border-radius: v.$border-radius-sm;
-    font-size: 1rem;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
     font-family: inherit;
     color: var(--text-color);
     background-color: #f8fafc;
@@ -98,10 +99,10 @@ function handleChange(event: Event) {
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 0.75rem center;
-    background-size: 1.25rem;
-    padding-right: 2.75rem;
-    height: 42px;
+    background-position: right 8px center;
+    background-size: 16px;
+    padding-right: 32px;
+    height: 36px;
 
     &::placeholder {
       color: var(--text-secondary);
@@ -127,8 +128,9 @@ function handleChange(event: Event) {
     }
 
     option {
-      padding: 0.75rem;
-      font-size: 1rem;
+      padding: 8px 12px;
+      font-size: 0.875rem;
+      line-height: 1.25rem;
       font-family: inherit;
     }
   }

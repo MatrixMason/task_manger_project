@@ -3,10 +3,12 @@ import { RouterLink, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import ThemeToggle from '@/features/ThemeToggle/ui/ThemeToggle.vue'
 import { useUsersStore } from '@/entities/user/model/users.store'
+import { usePermissions } from '@/features/Auth/lib/usePermissions'
 
 const router = useRouter()
 const usersStore = useUsersStore()
 const { currentUser, isAuthenticated } = storeToRefs(usersStore)
+const { hasPermission } = usePermissions()
 
 async function handleLogout() {
   await usersStore.logout()
@@ -26,6 +28,13 @@ async function handleLogout() {
         </RouterLink>
         <RouterLink to="/projects" class="app-header__link">
           Проекты
+        </RouterLink>
+        <RouterLink
+          v-if="isAuthenticated && hasPermission('team.view')"
+          to="/team"
+          class="app-header__link"
+        >
+          Команда
         </RouterLink>
       </nav>
       <div class="app-header__actions">

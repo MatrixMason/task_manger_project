@@ -7,8 +7,11 @@ import { useThemeStore } from '@/shared/model/theme.store'
 const usersStore = useUsersStore()
 const themeStore = useThemeStore()
 
-// Инициализируем тему при загрузке приложения
+// Инициализируем тему и загружаем пользователя при загрузке приложения
 themeStore.initTheme()
+if (usersStore.isAuthenticated) {
+  usersStore.getCurrentUser()
+}
 </script>
 
 <template>

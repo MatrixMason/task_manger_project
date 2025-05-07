@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 import BaseSelect from '@/shared/ui/Select/BaseSelect.vue'
 
-type SortField = 'createdAt' | 'priority' | 'title'
+type SortField = 'deadline' | 'priority' | 'status'
 type SortOrder = 'asc' | 'desc'
 
 interface SortOption {

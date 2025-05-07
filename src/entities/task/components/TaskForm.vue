@@ -22,23 +22,18 @@ const emit = defineEmits<{
   (e: 'cancel'): void
 }>()
 
-type FormData = {
-  title: string
-  description: string
-  status: TaskStatus
-  priority: TaskPriority
-  assignedTo: number | null
-  projectId: number | undefined
-  deadline: string | null
+type FormData = Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'assignee' | 'attachments' | 'position' | 'completed'> & {
+  id?: number
 }
 
 const formData = ref<FormData>({
+  id: props.initialData?.id,
   title: props.initialData?.title || '',
   description: props.initialData?.description || '',
-  status: props.initialData?.status || ('todo' as const),
-  priority: props.initialData?.priority || ('medium' as const),
+  status: props.initialData?.status || 'todo',
+  priority: props.initialData?.priority || 'medium',
   assignedTo: props.initialData?.assignedTo || null,
-  projectId: props.initialData?.projectId,
+  projectId: props.initialData?.projectId || 0,
   deadline: props.initialData?.deadline || null,
 })
 

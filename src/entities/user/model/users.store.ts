@@ -91,6 +91,59 @@ export const useUsersStore = defineStore('users', () => {
     localStorage.removeItem(TOKEN_KEY)
   }
 
+  async function createUser(data: RegisterData) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const newUser = await usersApi.createUser(data)
+      users.value.push(newUser)
+      return newUser
+    } catch (e) {
+      error.value = 'Не удалось создать пользователя'
+      console.error(e)
+      throw error.value
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function updateUser(id: string | number, data: Partial<User>) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const updatedUser = await usersApi.updateUser(id, data)
+      const index = users.value.findIndex(user => user.id === id)
+      if (index !== -1) {
+        users.value[index] = updatedUser
+      }
+      return updatedUser
+    } catch (e) {
+      error.value = 'Не удалось обновить пользователя'
+      console.error(e)
+      throw error.value
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function deleteUser(id: string | number) {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      await usersApi.deleteUser(id)
+      users.value = users.value.filter(user => user.id !== id)
+    } catch (e) {
+      error.value = 'Не удалось удалить пользователя'
+      console.error(e)
+      throw error.value
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     users,
     currentUser,
@@ -99,6 +152,9 @@ export const useUsersStore = defineStore('users', () => {
     error,
     isAuthenticated,
     fetchUsers,
+    createUser,
+    updateUser,
+    deleteUser,
     getUserById,
     login,
     logout,
