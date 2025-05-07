@@ -29,6 +29,7 @@ export interface Task {
   deadline: string | null
   assignee?: User
   attachments?: TaskAttachment[]
+  position: number
   completed: boolean
 }
 

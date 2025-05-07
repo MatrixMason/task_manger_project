@@ -6,6 +6,12 @@ interface CreateTaskData {
   // Add other properties as needed
 }
 
+interface UpdatePositionData {
+  taskId: string
+  status: string
+  position: number
+}
+
 export const tasksApi = {
   async getTasks(filters?: TaskFilters) {
     const { data } = await api.get<Task[]>('/tasks', { params: filters })
@@ -60,7 +66,16 @@ export const tasksApi = {
     }
   },
 
-  async deleteTask(id: string) {
+  async updatePositions(updates: UpdatePositionData[]): Promise<void> {
+    // Обновляем каждую задачу по отдельности
+    await Promise.all(
+      updates.map(({ taskId, status, position }) =>
+        api.patch(`/tasks/${taskId}`, { status, position })
+      )
+    )
+  },
+
+  async deleteTask(id: string): Promise<void> {
     await api.delete(`/tasks/${id}`)
   },
 }

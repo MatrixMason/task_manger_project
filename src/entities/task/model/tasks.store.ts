@@ -54,6 +54,64 @@ export const useTasksStore = defineStore('tasks', () => {
     })
   }
 
+  const tasksByStatus = computed(() => {
+    // Сначала фильтруем задачи
+    const filtered = filteredTasks.value
+
+    // Затем группируем по статусу и сортируем по позиции
+    const grouped: Record<TaskStatus, Task[]> = {
+      'todo': filtered.filter(task => task.status === 'todo').sort((a, b) => a.position - b.position),
+      'in-progress': filtered.filter(task => task.status === 'in-progress').sort((a, b) => a.position - b.position),
+      'done': filtered.filter(task => task.status === 'done').sort((a, b) => a.position - b.position)
+    }
+
+    return grouped
+  })
+
+  async function moveTask(taskId: string, newStatus: TaskStatus, position: number) {
+    const task = tasks.value.find(t => t.id === taskId)
+    if (!task) return
+
+    const oldStatus = task.status
+    const oldPosition = task.position
+
+    // Оптимистично обновляем UI
+    task.status = newStatus
+    task.position = position
+
+    // Обновляем позиции других задач
+    const updates = [{ taskId, status: newStatus, position }]
+
+    // Если задача перемещена в другой статус, пересчитываем позиции
+    if (oldStatus !== newStatus) {
+      const tasksInNewStatus = tasks.value
+        .filter(t => t.status === newStatus && t.id !== taskId)
+        .sort((a, b) => a.position - b.position)
+
+      tasksInNewStatus.forEach((t, index) => {
+        const newPosition = index >= position ? index + 1 : index
+        t.position = newPosition
+        updates.push({ taskId: t.id, status: newStatus, position: newPosition })
+      })
+    }
+
+    try {
+      await tasksApi.updatePositions(updates)
+    } catch (e) {
+      // В случае ошибки возвращаем всё как было
+      task.status = oldStatus
+      task.position = oldPosition
+      console.error('Failed to update task positions:', e)
+    }
+  }
+
+  const getNextPosition = (status: TaskStatus): number => {
+    const tasksInStatus = tasks.value.filter(t => t.status === status)
+    return tasksInStatus.length > 0
+      ? Math.max(...tasksInStatus.map(t => t.position)) + 1
+      : 0
+  }
+
   const filteredTasks = computed(() => {
     let filtered = tasks.value
 
@@ -90,22 +148,7 @@ export const useTasksStore = defineStore('tasks', () => {
     return sortTasks(filtered)
   })
 
-  const tasksByStatus = computed(() => {
-    return tasks.value.reduce<Record<TaskStatus, Task[]>>(
-      (acc, task) => {
-        if (!acc[task.status]) {
-          acc[task.status] = []
-        }
-        acc[task.status].push(task)
-        return acc
-      },
-      {
-        todo: [],
-        'in-progress': [],
-        done: [],
-      },
-    )
-  })
+
 
   const filteredTasksByStatus = computed(() => {
     return filteredTasks.value.reduce<Record<TaskStatus, Task[]>>(
@@ -232,20 +275,21 @@ export const useTasksStore = defineStore('tasks', () => {
     tasks,
     loading,
     error,
-    tasksByStatus,
+    searchQuery,
+    filters,
+    sort,
     filteredTasks,
+    tasksByStatus,
     filteredTasksByStatus,
-    createTask,
-    updateTask,
+    moveTask,
+    getNextPosition,
     deleteTask,
     fetchTasks,
+    createTask,
+    updateTask,
     setSearchQuery,
     setFilter,
     setFilters,
-    setSort,
-    sort,
-    // Экспортируем состояние фильтров и поиска
-    searchQuery,
-    filters,
+    setSort
   }
 })

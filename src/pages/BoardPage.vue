@@ -61,9 +61,11 @@ onMounted(() => {
         v-for="status in ['todo', 'in-progress', 'done'] as const"
         :key="status"
         :title="columnTitles[status]"
+        :status="status"
         :tasks="tasksStore.filteredTasksByStatus[status]"
         @task-click="handleTaskClick"
         @task-delete="handleTaskDelete"
+        @move-task="({ taskId, status, position }) => tasksStore.moveTask(taskId, status, position)"
       />
     </div>
 

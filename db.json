@@ -4,7 +4,7 @@
       "id": "1",
       "title": "Разработка дизайн-системы",
       "description": "Создать базовые компоненты и документацию",
-      "status": "in-progress",
+      "status": "done",
       "priority": "low",
       "createdAt": "2025-04-10T10:00:00.000Z",
       "updatedAt": "2025-05-07T09:20:38.030Z",
@@ -12,7 +12,8 @@
       "deadline": "2025-05-08T09:41",
       "projectId": 1,
       "completed": false,
-      "attachments": []
+      "attachments": [],
+      "position": 1
     },
     {
       "id": "2",
@@ -26,7 +27,8 @@
       "deadline": "2025-05-25T09:42",
       "projectId": "1",
       "attachments": [],
-      "completed": false
+      "completed": false,
+      "position": 0
     },
     {
       "id": "3",
@@ -38,37 +40,40 @@
       "updatedAt": "2025-05-07T06:18:31.497Z",
       "assignedTo": 2,
       "deadline": "2025-05-14T10:50",
-      "projectId": "1ed7"
+      "projectId": "1ed7",
+      "position": 0
     },
     {
       "id": "4",
       "title": "ТЕСТ",
       "description": "ОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\n",
-      "status": "todo",
+      "status": "in-progress",
       "createdAt": "2025-04-10T12:00:00.000Z",
       "updatedAt": "2025-05-07T06:43:18.664Z",
       "priority": "low",
       "assignedTo": 2,
       "projectId": 1,
-      "deadline": "2025-05-31T09:34"
+      "deadline": "2025-05-31T09:34",
+      "position": 2
     },
     {
       "id": "9",
       "title": "9999767777",
       "description": "1111",
-      "status": "todo",
+      "status": "in-progress",
       "priority": "high",
       "assignedTo": 3,
       "projectId": 4,
       "createdAt": "2025-05-01T14:21:13.436Z",
       "updatedAt": "2025-05-02T17:36:11.525Z",
-      "deadline": "2025-05-10T20:36"
+      "deadline": "2025-05-10T20:36",
+      "position": 0
     },
     {
       "id": "10",
       "title": "Задача1",
       "description": "Описание",
-      "status": "in-progress",
+      "status": "todo",
       "priority": "high",
       "assignedTo": "e209",
       "projectId": 1,
@@ -76,19 +81,21 @@
       "updatedAt": "2025-05-07T08:33:38.340Z",
       "deadline": "2025-05-09T11:33",
       "attachments": [],
-      "completed": false
+      "completed": false,
+      "position": 1
     },
     {
       "id": "11",
       "title": "Задача 999",
       "description": "Описание",
-      "status": "in-progress",
+      "status": "todo",
       "priority": "low",
       "assignedTo": "2eea",
       "projectId": "1ed7",
       "createdAt": "2025-05-02T17:49:48.577Z",
       "updatedAt": "2025-05-02T17:49:48.577Z",
-      "deadline": "2025-05-03T20:49"
+      "deadline": "2025-05-03T20:49",
+      "position": 2
     }
   ],
   "projects": [
