@@ -19,12 +19,12 @@ const emit = defineEmits<{
 
 const filters = ref<Filters>({
   search: props.initialFilters?.search || '',
-  status: props.initialFilters?.status || 'all',
+  status: props.initialFilters?.status || '',
   sortBy: props.initialFilters?.sortBy || 'updatedAt'
 })
 
 const statusOptions = [
-  { value: 'all', label: 'Все статусы' },
+  { value: '', label: 'Все статусы' },
   { value: 'active', label: 'Активные' },
   { value: 'completed', label: 'Завершенные' },
   { value: 'archived', label: 'В архиве' }

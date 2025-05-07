@@ -9,7 +9,7 @@ export const useProjectsStore = defineStore('projects', () => {
   const error = ref<string | null>(null)
   const filters = ref({
     search: '',
-    status: 'all',
+    status: '',
     sortBy: 'updatedAt'
   })
 
@@ -21,7 +21,7 @@ export const useProjectsStore = defineStore('projects', () => {
           project.description.toLowerCase().includes(filters.value.search.toLowerCase())
 
         // Фильтр по статусу
-        const matchesStatus = filters.value.status === 'all' || project.status === filters.value.status
+        const matchesStatus = !filters.value.status || project.status === filters.value.status
 
         return matchesSearch && matchesStatus
       })
