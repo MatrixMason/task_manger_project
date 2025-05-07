@@ -1,7 +1,17 @@
 <script setup lang="ts">
-import { RouterLink } from 'vue-router'
+import { RouterLink, useRouter } from 'vue-router'
+import { storeToRefs } from 'pinia'
 import ThemeToggle from '@/features/ThemeToggle/ui/ThemeToggle.vue'
+import { useUsersStore } from '@/entities/user/model/users.store'
 
+const router = useRouter()
+const usersStore = useUsersStore()
+const { currentUser, isAuthenticated } = storeToRefs(usersStore)
+
+async function handleLogout() {
+  await usersStore.logout()
+  router.push('/login')
+}
 </script>
 
 <template>
@@ -19,6 +29,12 @@ import ThemeToggle from '@/features/ThemeToggle/ui/ThemeToggle.vue'
         </RouterLink>
       </nav>
       <div class="app-header__actions">
+        <div v-if="isAuthenticated" class="app-header__user">
+          <span class="app-header__username">{{ currentUser?.email }}</span>
+          <button @click="handleLogout" class="app-header__logout">
+            Выйти
+          </button>
+        </div>
         <ThemeToggle />
       </div>
     </div>
@@ -66,6 +82,32 @@ import ThemeToggle from '@/features/ThemeToggle/ui/ThemeToggle.vue'
     display: flex;
     align-items: center;
     gap: 1rem;
+  }
+
+  &__user {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  &__username {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+  }
+
+  &__logout {
+    padding: 0.5rem 1rem;
+    border: 1px solid var(--color-error);
+    border-radius: 4px;
+    background: none;
+    color: var(--color-error);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--color-error);
+      color: white;
+    }
   }
 }
 </style>

@@ -59,9 +59,27 @@ export const useUsersStore = defineStore('users', () => {
       currentUser.value = response.user
       accessToken.value = response.accessToken
       localStorage.setItem(TOKEN_KEY, response.accessToken)
+      await getCurrentUser()
     } catch (e) {
       error.value = 'Не удалось авторизоваться'
       console.error(e)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function getCurrentUser() {
+    if (!accessToken.value) return
+    
+    isLoading.value = true
+    error.value = null
+
+    try {
+      currentUser.value = await usersApi.getCurrentUser()
+    } catch (e) {
+      error.value = 'Не удалось загрузить данные пользователя'
+      console.error(e)
+      logout()
     } finally {
       isLoading.value = false
     }
@@ -85,5 +103,6 @@ export const useUsersStore = defineStore('users', () => {
     login,
     logout,
     register,
+    getCurrentUser
   }
 })

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+&lt;script setup lang=&quot;ts&quot;&gt;
 import { computed, ref } from 'vue'
 import type { Task } from '@/entities/task/model/types'
 import TaskCard from '@/entities/task/components/TaskCard.vue'
@@ -8,38 +8,38 @@ defineOptions({
   name: 'TaskList',
 })
 
-const props = defineProps<{
+const props = defineProps&lt;{
   tasks: Task[]
-}>()
+}&gt;()
 
-const selectedUserId = ref<number | null>(null)
+const selectedUserId = ref&lt;number | null&gt;(null)
 
-const filteredTasks = computed(() => {
+const filteredTasks = computed(() =&gt; {
   if (!selectedUserId.value) return props.tasks
-  return props.tasks.filter((task) => task.assignedTo === selectedUserId.value)
+  return props.tasks.filter((task) =&gt; task.assignedTo === selectedUserId.value)
 })
 
-const sortedTasks = computed(() =>
+const sortedTasks = computed(() =&gt;
   [...filteredTasks.value].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+    (a, b) =&gt; new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   ),
 )
-</script>
+&lt;/script&gt;
 
-<template>
-  <div class="task-list">
-    <div class="task-list__header">
-      <UserFilter @filter="userId => selectedUserId = userId ?? null" />
-    </div>
-    <TaskCard v-for="task in sortedTasks" :key="task.id" :task="task" />
-  </div>
-</template>
+&lt;template&gt;
+  &lt;div class=&quot;task-list&quot;&gt;
+    &lt;div class=&quot;task-list__header&quot;&gt;
+      &lt;UserFilter @filter=&quot;userId =&gt; selectedUserId = userId ?? null&quot; /&gt;
+    &lt;/div&gt;
+    &lt;TaskCard v-for=&quot;task in sortedTasks&quot; :key=&quot;task.id&quot; :task=&quot;task&quot; /&gt;
+  &lt;/div&gt;
+&lt;/template&gt;
 
-<style lang="scss" scoped>
+&lt;style lang=&quot;scss&quot; scoped&gt;
 @import '@/app/styles/variables';
 
 .task-list {
-  &__header {
+  &amp;__header {
     margin-bottom: $spacing-md;
   }
 
@@ -47,4 +47,4 @@ const sortedTasks = computed(() =>
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: $spacing-md;
 }
-</style>
+&lt;/style&gt;
