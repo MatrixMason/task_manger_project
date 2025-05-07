@@ -1,36 +1,86 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
-import type { Task, TaskFilters, TaskStatus } from './types'
+import { ref, computed, watch } from 'vue'
+import type { Task, TaskStatus, TaskPriority } from './types'
 import { tasksApi } from '@/shared/api/tasks'
+import { saveToLocalStorage, loadFromLocalStorage } from '@/shared/lib/local-storage'
+
+interface TaskFilters {
+  search?: string
+  status?: TaskStatus
+  priority?: TaskPriority
+  projectId?: number
+}
 
 export const useTasksStore = defineStore('tasks', () => {
   const tasks = ref<Task[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
-  const filters = ref<TaskFilters>({})
-  const selectedUserId = ref<number | null>(null)
+  const selectedUserId = ref<number | null>(loadFromLocalStorage('taskboard_selected_user', null))
+  const sort = ref<{ field: 'createdAt' | 'priority' | 'title'; order: 'asc' | 'desc' } | null>(
+    loadFromLocalStorage('taskboard_sort', null),
+  )
+  const filters = ref<TaskFilters>(
+    loadFromLocalStorage('taskboard_filters', {
+      search: '',
+      status: undefined,
+      priority: undefined,
+      projectId: undefined,
+    }),
+  )
+
+  const sortTasks = (tasksToSort: Task[]) => {
+    if (!sort.value) return tasksToSort
+
+    const { field, order } = sort.value
+    const modifier = order === 'asc' ? 1 : -1
+
+    return [...tasksToSort].sort((a, b) => {
+      if (field === 'priority') {
+        const priorityMap = { low: 0, medium: 1, high: 2 }
+        return (priorityMap[b.priority] - priorityMap[a.priority]) * modifier
+      }
+
+      if (field === 'title') {
+        return a.title.localeCompare(b.title) * modifier
+      }
+
+      return (new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()) * modifier
+    })
+  }
 
   const filteredTasks = computed(() => {
-    if (!selectedUserId.value) return tasks.value
-    return tasks.value.filter((task) => task.assignedTo === selectedUserId.value)
-  })
-
-  /*   const filteredTasks = computed(() => {
-    return tasks.value.filter((task) => {
-      if (filters.value.status && task.status !== filters.value.status) return false
-      if (filters.value.priority && task.priority !== filters.value.priority) return false
-      if (filters.value.assignedTo && task.assignedTo !== filters.value.assignedTo) return false
-      if (filters.value.projectId && task.projectId !== filters.value.projectId) return false
-      if (filters.value.search) {
-        const search = filters.value.search.toLowerCase()
-        return (
-          task.title.toLowerCase().includes(search) ||
-          task.description.toLowerCase().includes(search)
+    const filtered = tasks.value.filter((task) => {
+      if (
+        filters.value.search &&
+        !(
+          task.title.toLowerCase().includes(filters.value.search.toLowerCase()) ||
+          task.description.toLowerCase().includes(filters.value.search.toLowerCase())
         )
+      ) {
+        return false
       }
+
+      if (filters.value.status && task.status !== filters.value.status) {
+        return false
+      }
+
+      if (filters.value.priority && task.priority !== filters.value.priority) {
+        return false
+      }
+
+      if (filters.value.projectId && task.projectId !== filters.value.projectId) {
+        return false
+      }
+
+      if (selectedUserId.value !== null && task.assignedTo !== selectedUserId.value) {
+        return false
+      }
+
       return true
     })
-  }) */
+
+    return sortTasks(filtered)
+  })
 
   const tasksByStatus = computed(() => {
     const grouped: Record<TaskStatus, Task[]> = {
@@ -141,18 +191,49 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
+  function setFilters(newFilters: TaskFilters) {
+    filters.value = newFilters
+  }
+
+  // Сохраняем фильтры при изменении
+  watch(
+    () => filters.value,
+    (newFilters) => {
+      saveToLocalStorage('taskboard_filters', newFilters)
+    },
+    { deep: true },
+  )
+
+  // Сохраняем выбранного пользователя при изменении
+  watch(
+    () => selectedUserId.value,
+    (newUserId) => {
+      saveToLocalStorage('taskboard_selected_user', newUserId)
+    },
+  )
+
+  // Сохраняем сортировку при изменении
+  watch(
+    () => sort.value,
+    (newSort) => {
+      saveToLocalStorage('taskboard_sort', newSort)
+    },
+  )
+
   return {
     tasks,
     loading,
     error,
     filters,
-    tasksByStatus,
-    filteredTasksByStatus,
     selectedUserId,
     filteredTasks,
+    tasksByStatus,
+    filteredTasksByStatus,
     fetchTasks,
     createTask,
     updateTask,
     deleteTask,
+    setFilters,
+    sort,
   }
 })

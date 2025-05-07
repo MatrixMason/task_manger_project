@@ -98,9 +98,7 @@ async function handleCreateProjectForm() {
       name: formData.value.name,
       description: formData.value.description,
       status: 'active',
-      teamMembers: [],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      teamMembers: []
     })
     console.log('Project created successfully')
     showCreateModal.value = false

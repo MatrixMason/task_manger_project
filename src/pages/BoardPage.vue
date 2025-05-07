@@ -3,6 +3,8 @@ import { ref, onMounted } from 'vue'
 import { useTasksStore } from '@/entities/task/model/tasks.store'
 import KanbanColumn from '@/widgets/KanbanBoard/ui/KanbanColumn.vue'
 import UserFilter from '@/entities/task/components/UserFilter.vue'
+import TaskFilters from '@/features/TaskFilters/ui/TaskFilters.vue'
+import TaskSort from '@/features/TaskSort/ui/TaskSort.vue'
 import type { Task } from '@/entities/task/model/types'
 import TaskFormModal from '@/features/TaskForm/ui/TaskFormModal.vue'
 
@@ -29,7 +31,6 @@ function handleTaskSaved() {
 }
 
 function handleTaskDelete(taskId: number) {
-  // No need to do anything here since the store already updates the UI
   console.log('Task deleted:', taskId)
 }
 
@@ -43,9 +44,15 @@ onMounted(() => {
     <header class="board-page__header">
       <div class="board-page__title">
         <h1>Канбан-доска. Задачи</h1>
-        <UserFilter @filter="userId => tasksStore.selectedUserId = userId" />
       </div>
-      <button class="btn btn--primary" @click="showAddTask = true">Добавить задачу</button>
+      <div class="board-page__controls">
+        <div class="board-page__filters">
+          <TaskFilters @filter="tasksStore.setFilters" />
+          <UserFilter @filter="(userId) => (tasksStore.selectedUserId = userId)" />
+          <TaskSort @sort="(sort) => (tasksStore.sort = sort)" />
+        </div>
+        <button class="btn btn--primary" @click="showAddTask = true">Добавить задачу</button>
+      </div>
     </header>
     <div v-if="tasksStore.loading" class="board-page__loading">Загрузка задач...</div>
     <div v-else-if="tasksStore.error" class="board-page__error">
@@ -75,22 +82,30 @@ onMounted(() => {
   height: 100%;
 
   &__header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
     margin-bottom: $spacing-lg;
   }
 
   &__title {
-    display: flex;
-    align-items: center;
-    gap: $spacing-lg;
-
     h1 {
-      color: $text-primary;
       margin: 0;
+      margin-bottom: v.$spacing-md;
     }
   }
+
+  &__controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: v.$spacing-lg;
+  }
+
+  &__filters {
+    display: flex;
+    align-items: center;
+    gap: v.$spacing-md;
+    flex: 1;
+  }
+
   &__loading,
   &__error {
     text-align: center;

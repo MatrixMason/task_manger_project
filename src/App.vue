@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import { useUsersStore } from '@/entities/user/model/users.store'
-import AppHeader from '@/widgets/Header/ui/AppHeader.vue'
+import AppHeader from '@/widgets/AppHeader/ui/AppHeader.vue'
+import { useThemeStore } from '@/shared/model/theme.store'
 
 const usersStore = useUsersStore()
+const themeStore = useThemeStore()
+
+// Инициализируем тему при загрузке приложения
+themeStore.initTheme()
 </script>
 
 <template>
@@ -14,6 +19,8 @@ const usersStore = useUsersStore()
 </template>
 
 <style lang="scss">
+@use '@/app/styles/theme';
+
 body {
   margin: 0;
   font-family:
@@ -22,45 +29,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--text-primary);
-  background-color: #f5f5f5;
-}
-
-.header {
-  padding: 1rem;
-  background-color: #f8f9fa;
-  border-bottom: 1px solid #e9ecef;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  nav {
-    display: flex;
-    gap: 1rem;
-
-    a {
-      color: #666;
-      text-decoration: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      transition: all 0.2s;
-
-      &:hover {
-        background-color: #e9ecef;
-      }
-
-      &.router-link-active {
-        color: var(--primary-color);
-        font-weight: 500;
-        background-color: #e8f5e9;
-      }
-    }
-  }
-
-  .user-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
+  background-color: var(--bg-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .fade-enter-active,

@@ -1,13 +1,5 @@
 @use 'variables' as *;
-
-:root {
-  --primary-color: #{$primary-color};
-  --secondary-color: #{$secondary-color};
-  --success-color: #{$success-color};
-  --error-color: #{$error-color};
-  --text-primary: #{$text-primary};
-  --text-secondary: #{$text-secondary};
-}
+@use 'theme';
 
 * {
   margin: 0;
@@ -23,8 +15,9 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--text-primary);
-  background-color: #f5f5f5;
+  background-color: var(--bg-primary);
   line-height: 1.5;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1,

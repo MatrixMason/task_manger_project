@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { storeToRefs } from 'pinia'
 import { useUsersStore } from '@/entities/user/model/users.store'
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import BaseSelect from '@/shared/ui/Select/BaseSelect.vue'
 
 const emit = defineEmits<{
   (e: 'filter', userId: number | null): void
@@ -9,7 +10,15 @@ const emit = defineEmits<{
 
 const usersStore = useUsersStore()
 const { users } = storeToRefs(usersStore)
-const selectedUser = ref<number | null>(null)
+const selectedUser = ref('')
+
+const userOptions = computed(() => [
+  { value: '', label: 'Все пользователи' },
+  ...users.value.map(user => ({
+    value: user.id.toString(),
+    label: `${user.name} (${user.role})`
+  }))
+])
 
 onMounted(async () => {
   if (users.value.length === 0) {
@@ -18,45 +27,26 @@ onMounted(async () => {
 })
 
 function handleChange(userId: string) {
-  selectedUser.value = userId ? Number(userId) : null
-  emit('filter', selectedUser.value)
+  selectedUser.value = userId
+  emit('filter', userId ? Number(userId) : null)
 }
 </script>
 
 <template>
   <div class="user-filter">
-    <select
-      class="user-filter__select"
-      :value="selectedUser"
-      @change="handleChange(($event.target as HTMLSelectElement).value)"
-    >
-      <option value="">Все пользователи</option>
-      <option v-for="user in users" :key="user.id" :value="user.id">
-        {{ user.name }} ({{ user.role }})
-      </option>
-    </select>
+    <BaseSelect
+      v-model="selectedUser"
+      :options="userOptions"
+      class="task-filters__select"
+      @update:modelValue="handleChange"
+    />
   </div>
 </template>
 
 <style scoped lang="scss">
 .user-filter {
-  &__select {
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    background-color: var(--background-primary);
-    color: var(--text-primary);
-    font-size: 0.875rem;
-    width: 200px;
-
-    &:focus {
-      outline: none;
-      border-color: var(--primary-color);
-    }
-
-    option {
-      padding: 0.5rem;
-    }
+  :deep(.task-filters__select) {
+    min-width: 200px;
   }
 }
 </style>

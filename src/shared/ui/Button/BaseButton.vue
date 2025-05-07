@@ -39,84 +39,93 @@ defineEmits<{
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  border-radius: v.$border-radius-md;
-  cursor: pointer;
+  padding: v.$spacing-sm v.$spacing-md;
+  border-radius: var(--radius-md);
   font-weight: 500;
-  transition: all 0.2s ease;
-  gap: v.$spacing-xs;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  border: 1px solid transparent;
+  box-shadow: var(--shadow-sm);
 
   &:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
   }
 
-  &--sm {
-    padding: v.$spacing-xs v.$spacing-sm;
-    font-size: 0.875rem;
+  &:active:not(:disabled) {
+    transform: translateY(1px);
   }
 
-  &--md {
-    padding: v.$spacing-sm v.$spacing-md;
-    font-size: 1rem;
-  }
-
-  &--lg {
-    padding: v.$spacing-md v.$spacing-lg;
-    font-size: 1.125rem;
-  }
-
+  // Варианты
   &--primary {
-    background: var(--primary-color);
-    color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border: 2px solid var(--primary-color);
-    transition: all 0.2s ease;
+    background: var(--color-primary);
+    color: var(--text-on-primary);
 
     &:hover:not(:disabled) {
-      background: white;
-      color: var(--primary-color);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-
-    &:active:not(:disabled) {
-      transform: translateY(0);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      background: var(--color-primary-hover);
+      box-shadow: var(--shadow-md);
     }
   }
 
   &--secondary {
-    background: var(--background-color);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+    color: var(--text-primary);
 
     &:hover:not(:disabled) {
-      background: var(--background-color-hover);
-      border-color: var(--border-color-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background: var(--bg-tertiary);
+      border-color: var(--color-primary);
+      color: var(--color-primary);
+      box-shadow: var(--shadow-md);
+    }
+  }
+
+  &--text {
+    background: transparent;
+    color: var(--text-primary);
+    padding: v.$spacing-xs;
+    box-shadow: none;
+
+    &:hover:not(:disabled) {
+      color: var(--color-primary);
+      background: var(--hover-overlay);
     }
 
     &:active:not(:disabled) {
-      transform: translateY(0);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      background: var(--active-overlay);
+      transform: none;
     }
   }
 
   &--danger {
-    background: var(--error-color);
-    color: white;
+    background: var(--color-danger);
+    color: var(--text-on-primary);
+    border-color: transparent;
 
     &:hover:not(:disabled) {
-      background: var(--error-color-hover);
-      transform: translateY(-1px);
+      background: var(--color-danger-hover);
+      box-shadow: var(--shadow-md);
     }
 
     &:active:not(:disabled) {
-      transform: translateY(0);
+      transform: translateY(1px);
+      box-shadow: var(--shadow-sm);
     }
+  }
+
+  // Размеры
+  &--sm {
+    font-size: 0.875rem;
+    padding: v.$spacing-xs v.$spacing-sm;
+  }
+
+  &--md {
+    font-size: 1rem;
+  }
+
+  &--lg {
+    font-size: 1.125rem;
+    padding: v.$spacing-md v.$spacing-lg;
   }
 
   &--block {
