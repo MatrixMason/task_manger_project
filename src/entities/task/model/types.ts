@@ -17,7 +17,7 @@ export interface TaskAttachment {
 }
 
 export interface Task {
-  id: string
+  id: number
   title: string
   description?: string
   status: TaskStatus
@@ -44,12 +44,12 @@ export interface CreateTaskData {
   attachments?: File[]
 }
 
-export interface TaskFilters {
-  status?: TaskStatus
-  priority?: TaskPriority
-  assignedTo?: number
-  projectId?: number
-  search?: string
-  sort?: 'deadline' | 'priority' | 'status'
-  order?: 'asc' | 'desc'
-}
+export type TaskFilters = Partial<{
+  search: string
+  status: TaskStatus
+  priority: TaskPriority
+  assignedTo: string
+  projectId: number
+  sort: 'deadline' | 'priority' | 'status'
+  order: 'asc' | 'desc'
+}>

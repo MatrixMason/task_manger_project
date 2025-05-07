@@ -4,7 +4,7 @@ import { passwordUtils } from '@/shared/lib/password'
 
 export interface RegisterData extends LoginCredentials {
   name: string
-  role?: 'developer' | 'manager' | 'designer'
+  role?: 'admin' | 'developer' | 'manager' | 'designer'
 }
 
 export const usersApi = {
@@ -13,12 +13,29 @@ export const usersApi = {
     if (!token) throw new Error('Not authenticated')
 
     try {
-      const { userId } = JSON.parse(atob(token))
-      const user = await this.getUser(userId)
+      // Декодируем токен и получаем данные пользователя
+      const tokenParts = token.split('.')
+      if (tokenParts.length !== 3) throw new Error('Invalid token format')
+      
+      const payload = JSON.parse(atob(tokenParts[1]))
+      if (!payload.userId || !payload.role) throw new Error('Invalid token payload')
+
+      // Получаем пользователя по ID
+      const user = await this.getUser(payload.userId)
+      if (!user) throw new Error('User not found')
+
+      // Проверяем, что роль в токене совпадает с ролью в БД
+      if (user.role !== payload.role) {
+        throw new Error('Role mismatch')
+      }
+
+      // Удаляем пароль из ответа
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { password, ...userWithoutPassword } = user
       return userWithoutPassword
-    } catch {
+    } catch (error) {
+      console.error('Failed to get current user:', error)
+      localStorage.removeItem('auth_token') // Удаляем невалидный токен
       throw new Error('Invalid token')
     }
   },
@@ -61,26 +78,72 @@ export const usersApi = {
     }
   },
 
+  async createUser(data: RegisterData): Promise<User> {
+    const { data: users } = await apiInstance.get<User[]>('/users')
+    if (users.some((u) => u.email === data.email)) {
+      throw new Error('Пользователь с таким email уже существует')
+    }
+
+    const hashedPassword = await passwordUtils.hash(data.password)
+
+    const newUser: Omit<UserWithPassword, 'id'> = {
+      name: data.name,
+      email: data.email,
+      role: data.role || 'developer',
+      password: hashedPassword,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+
+    const { data: createdUser } = await apiInstance.post<UserWithPassword>('/users', newUser)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _pwd, ...userWithoutPassword } = createdUser
+    return userWithoutPassword
+  },
+
+  async updateUser(id: string | number, data: Partial<User>): Promise<User> {
+    const { data: updatedUser } = await apiInstance.patch<UserWithPassword>(`/users/${id}`, {
+      ...data,
+      updatedAt: new Date().toISOString()
+    })
+    const { password, ...userWithoutPassword } = updatedUser
+    return userWithoutPassword
+  },
+
+  async deleteUser(id: string | number): Promise<void> {
+    await apiInstance.delete(`/users/${id}`)
+  },
+
   async login({ email, password }: LoginCredentials): Promise<AuthResponse> {
-    const { data: users } = await apiInstance.get<UserWithPassword[]>(`/users?email=${email}`)
-    const user = users[0]
+    const { data: users } = await apiInstance.get<UserWithPassword[]>('/users')
+    const user = users.find((u) => u.email === email)
 
     if (!user) {
       throw new Error('Неверный email или пароль')
     }
 
-    // Проверяем пароль, сравнивая его с хешем
-    if (!user.password || !(await passwordUtils.compare(password, user.password))) {
+    const isValidPassword = await passwordUtils.compare(password, user.password)
+    if (!isValidPassword) {
       throw new Error('Неверный email или пароль')
     }
 
-    const accessToken = btoa(JSON.stringify({ userId: user.id, timestamp: Date.now() }))
+    // Создаем JWT-подобный токен
+    const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }))
+    const payload = btoa(JSON.stringify({
+      userId: user.id,
+      role: user.role,
+      exp: Date.now() + 24 * 60 * 60 * 1000 // 24 часа
+    }))
+    const signature = btoa('signature') // В реальном приложении здесь была бы настоящая подпись
+    const token = `${header}.${payload}.${signature}`
 
     // Удаляем пароль из ответа
-    const { password: _password, ...userWithoutPassword } = user // eslint-disable-line @typescript-eslint/no-unused-vars
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _pwd, ...userWithoutPassword } = user
+
     return {
       user: userWithoutPassword,
-      accessToken
+      accessToken: token
     }
   },
 }

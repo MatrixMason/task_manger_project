@@ -1,5 +1,5 @@
 import { api } from './axios'
-import type { Task, TaskFilters } from '@/entities/task/model/types'
+import type { Task, TaskFilters, TaskStatus, TaskAttachment } from '@/entities/task/model/types'
 
 interface CreateTaskData {
   attachments?: File[]
@@ -7,8 +7,8 @@ interface CreateTaskData {
 }
 
 interface UpdatePositionData {
-  taskId: string
-  status: string
+  taskId: number
+  status: TaskStatus
   position: number
 }
 
@@ -18,7 +18,7 @@ export const tasksApi = {
     return data
   },
 
-  async getTaskById(id: string) {
+  async getTaskById(id: number) {
     const { data } = await api.get<Task>(`/tasks/${id}`)
     return data
   },
@@ -55,14 +55,53 @@ export const tasksApi = {
     return response.data
   },
 
-  async updateTask(id: string, task: Partial<Task>) {
+  async updateTask(id: number, task: Partial<Task>): Promise<Task> {
     try {
-      console.log('API updateTask:', id, typeof id)
-      const { data } = await api.patch<Task>(`/tasks/${id}`, task)
-      return data
+      if (!id || typeof id !== 'number') {
+        throw new Error(`Invalid task ID: ${id}`)
+      }
+      console.log('API updateTask:', { id, task })
+      
+      // Convert files to base64 if present
+      const taskData = { ...task }
+      if (taskData.attachments?.length) {
+        const convertedAttachments = await Promise.all(
+          taskData.attachments.map(async (attachment: File | TaskAttachment) => {
+            if (attachment instanceof File) {
+              const reader = new FileReader()
+              const base64Content = await new Promise<string>((resolve) => {
+                reader.onload = () => resolve(reader.result as string)
+                reader.readAsDataURL(attachment)
+              })
+              
+              return {
+                id: crypto.randomUUID(),
+                name: attachment.name,
+                type: attachment.type,
+                size: attachment.size,
+                content: base64Content
+              } as TaskAttachment
+            }
+            return attachment
+          })
+        )
+        taskData.attachments = convertedAttachments
+      }
+
+      const response = await api.patch<Task>(`/tasks/${id}`, taskData)
+      if (!response?.data) {
+        throw new Error('No data received from server')
+      }
+      return response.data
     } catch (error) {
       console.error('Failed to update task:', error)
-      throw error
+      if (error instanceof Error) {
+        throw error
+      } else if (typeof error === 'object' && error !== null) {
+        throw new Error(JSON.stringify(error))
+      } else {
+        throw new Error('Failed to update task: Unknown error')
+      }
     }
   },
 
@@ -75,7 +114,7 @@ export const tasksApi = {
     )
   },
 
-  async deleteTask(id: string): Promise<void> {
+  async deleteTask(id: number): Promise<void> {
     await api.delete(`/tasks/${id}`)
   },
 }
