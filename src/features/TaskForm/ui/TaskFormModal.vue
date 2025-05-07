@@ -64,45 +64,83 @@ async function handleSubmit(formData: Partial<Task>) {
   try {
     const now = new Date().toISOString()
 
-    // Convert files to base64 before sending
-    const attachmentPromises = selectedFiles.value.map(async file => {
-      return new Promise<string>((resolve, reject) => {
-        const reader = new FileReader()
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = reject
-        reader.readAsDataURL(file)
-      })
-    })
-
-    const attachments = await Promise.all(attachmentPromises)
-    const taskAttachments: TaskAttachment[] = attachments.map((base64, index) => ({
-      id: crypto.randomUUID(),
-      name: selectedFiles.value[index].name,
-      type: selectedFiles.value[index].type,
-      size: selectedFiles.value[index].size,
-      content: base64
-    }))
-
     const taskData: Partial<Task> = {
       ...formData,
-      attachments: taskAttachments,
-      completed: props.task?.completed ?? false,
-      createdAt: props.task?.createdAt ?? now,
       updatedAt: now
     }
 
-    let savedTask: Task
-    if (props.task) {
-      savedTask = await tasksStore.updateTask(props.task.id, taskData)
-    } else {
-      savedTask = await tasksStore.createTask(taskData as CreateTaskData)
+    // Handle attachments
+    if (selectedFiles.value.length > 0) {
+      const newAttachments = await Promise.all(selectedFiles.value.map(async (file) => {
+        const reader = new FileReader()
+        const base64 = await new Promise<string>((resolve) => {
+          reader.onload = () => resolve(reader.result as string)
+          reader.readAsDataURL(file)
+        })
+
+        return {
+          id: crypto.randomUUID(),
+          name: file.name,
+          type: file.type,
+          size: file.size,
+          content: base64
+        } as TaskAttachment
+      }))
+
+      // Combine existing attachments with new ones
+      taskData.attachments = [
+        ...(props.task?.attachments || []),
+        ...newAttachments
+      ]
+    } else if (props.task?.attachments) {
+      // Keep existing attachments if no new files
+      taskData.attachments = props.task.attachments
     }
 
-    emit('save', savedTask)
+    let savedTask: Task
+
+    try {
+      if (props.task) {
+        // Update existing task
+        const updatedTask = await tasksStore.updateTask(props.task.id, {
+          ...taskData,
+          id: props.task.id, // Ensure ID is included
+          status: props.task.status // Keep the current status
+        })
+        savedTask = updatedTask
+      } else {
+        // Create new task
+        const newTask = await tasksStore.createTask({
+          ...taskData,
+          completed: false,
+          createdAt: now,
+          status: 'todo' // Default status for new tasks
+        } as CreateTaskData)
+        savedTask = newTask
+      }
+
+      // Refresh task list
+      await tasksStore.fetchTasks()
+      
+      // Emit the save event with the saved task
+      emit('save', savedTask)
+      
+      // Close modal and return the saved task
+      handleClose()
+      return savedTask
+    } catch (error) {
+      console.error('Failed to save task:', error)
+      throw error
+    }
+
+
+
+    // Close modal after successful save
     handleClose()
   } catch (e) {
+    const errorMessage = e instanceof Error ? e.message : 'Failed to save task'
     console.error('Failed to save task:', e)
-    error.value = 'Failed to save task'
+    error.value = errorMessage
   } finally {
     loading.value = false
   }
@@ -163,8 +201,8 @@ async function handleSubmit(formData: Partial<Task>) {
 
         <div v-if="props.task" class="comments-section">
           <h3 class="comments-section__title">Comments</h3>
-          <CommentForm :task-id="props.task.id" />
-          <CommentsList :task-id="props.task.id" />
+          <CommentForm :task-id="String(props.task.id)" />
+          <CommentsList :task-id="String(props.task.id)" />
         </div>
       </div>
     </template>
