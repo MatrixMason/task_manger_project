@@ -1,32 +1,38 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
-import type { Task, TaskStatus, TaskPriority } from './types'
+import { ref, computed } from 'vue'
+import type { Task, TaskStatus, TaskPriority, CreateTaskData } from './types'
 import { tasksApi } from '@/shared/api/tasks'
-import { saveToLocalStorage, loadFromLocalStorage } from '@/shared/lib/local-storage'
 
 interface TaskFilters {
+  search: string
+  status: TaskStatus | ''
+  priority: TaskPriority | ''
+  assignedTo: string
+  projectId: string
+}
+
+type TaskFiltersInput = {
   search?: string
-  status?: TaskStatus
-  priority?: TaskPriority
-  projectId?: number
+  status?: TaskStatus | undefined
+  priority?: TaskPriority | undefined
+  assignedTo?: string
+  projectId?: string
 }
 
 export const useTasksStore = defineStore('tasks', () => {
   const tasks = ref<Task[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
-  const selectedUserId = ref<number | null>(loadFromLocalStorage('taskboard_selected_user', null))
-  const sort = ref<{ field: 'createdAt' | 'priority' | 'title'; order: 'asc' | 'desc' } | null>(
-    loadFromLocalStorage('taskboard_sort', null),
-  )
-  const filters = ref<TaskFilters>(
-    loadFromLocalStorage('taskboard_filters', {
-      search: '',
-      status: undefined,
-      priority: undefined,
-      projectId: undefined,
-    }),
-  )
+  const searchQuery = ref('')
+  const filters = ref<TaskFilters>({
+    search: '',
+    status: '',
+    priority: '',
+    assignedTo: '',
+    projectId: ''
+  })
+
+  const sort = ref<{ field: keyof Task; order: 'asc' | 'desc' } | null>(null)
 
   const sortTasks = (tasksToSort: Task[]) => {
     if (!sort.value) return tasksToSort
@@ -36,7 +42,7 @@ export const useTasksStore = defineStore('tasks', () => {
 
     return [...tasksToSort].sort((a, b) => {
       if (field === 'priority') {
-        const priorityMap = { low: 0, medium: 1, high: 2 }
+        const priorityMap: Record<TaskPriority, number> = { low: 0, medium: 1, high: 2 }
         return (priorityMap[b.priority] - priorityMap[a.priority]) * modifier
       }
 
@@ -49,65 +55,73 @@ export const useTasksStore = defineStore('tasks', () => {
   }
 
   const filteredTasks = computed(() => {
-    const filtered = tasks.value.filter((task) => {
-      if (
-        filters.value.search &&
-        !(
-          task.title.toLowerCase().includes(filters.value.search.toLowerCase()) ||
-          task.description.toLowerCase().includes(filters.value.search.toLowerCase())
-        )
-      ) {
-        return false
-      }
+    let filtered = tasks.value
 
-      if (filters.value.status && task.status !== filters.value.status) {
-        return false
-      }
+    // Применяем фильтры
+    if (filters.value.status !== '') {
+      filtered = filtered.filter((task) => task.status === filters.value.status)
+    }
 
-      if (filters.value.priority && task.priority !== filters.value.priority) {
-        return false
-      }
+    if (filters.value.priority !== '') {
+      filtered = filtered.filter((task) => task.priority === filters.value.priority)
+    }
 
-      if (filters.value.projectId && task.projectId !== filters.value.projectId) {
-        return false
-      }
+    if (filters.value.assignedTo !== '') {
+      filtered = filtered.filter((task) => task.assignedTo === filters.value.assignedTo)
+    }
 
-      if (selectedUserId.value !== null && task.assignedTo !== selectedUserId.value) {
-        return false
-      }
+    if (filters.value.projectId !== '') {
+      filtered = filtered.filter((task) => task.projectId.toString() === filters.value.projectId)
+    }
 
-      return true
-    })
+    // Применяем поиск
+    if (searchQuery.value) {
+      const query = searchQuery.value.toLowerCase()
+      filtered = filtered.filter((task) => {
+        const titleMatch = task.title.toLowerCase().includes(query)
+        const descriptionMatch = task.description
+          ? task.description.toLowerCase().includes(query)
+          : false
+        return titleMatch || descriptionMatch
+      })
+    }
 
+    // Применяем сортировку
     return sortTasks(filtered)
   })
 
   const tasksByStatus = computed(() => {
-    const grouped: Record<TaskStatus, Task[]> = {
-      todo: [],
-      'in-progress': [],
-      done: [],
-    }
-
-    tasks.value.forEach((task) => {
-      grouped[task.status].push(task)
-    })
-
-    return grouped
+    return tasks.value.reduce<Record<TaskStatus, Task[]>>(
+      (acc, task) => {
+        if (!acc[task.status]) {
+          acc[task.status] = []
+        }
+        acc[task.status].push(task)
+        return acc
+      },
+      {
+        todo: [],
+        'in-progress': [],
+        done: [],
+      },
+    )
   })
 
   const filteredTasksByStatus = computed(() => {
-    const grouped: Record<TaskStatus, Task[]> = {
-      todo: [],
-      'in-progress': [],
-      done: [],
-    }
-
-    filteredTasks.value.forEach((task) => {
-      grouped[task.status].push(task)
-    })
-
-    return grouped
+    return filteredTasks.value.reduce<Record<TaskStatus, Task[]>>(
+      (acc, task) => {
+        if (!acc[task.status]) {
+          acc[task.status] = []
+        }
+        acc[task.status].push(task)
+        return acc
+      },
+      {
+        todo: [],
+        'in-progress': [],
+        done: [],
+      },
+    )
   })
 
   async function fetchTasks() {
@@ -116,10 +130,7 @@ export const useTasksStore = defineStore('tasks', () => {
 
     try {
       const apiTasks = await tasksApi.getTasks()
-      tasks.value = apiTasks.map((task) => ({
-        ...task,
-        deadline: null,
-      }))
+      tasks.value = apiTasks
       return tasks.value
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to fetch tasks'
@@ -130,14 +141,14 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function createTask(task: Omit<Task, 'id'>, id: string) {
+  async function createTask(taskData: CreateTaskData): Promise<Task> {
     loading.value = true
     error.value = null
 
     try {
-      const taskWithId = { ...task, id }
-      const newTask = await tasksApi.createTask(taskWithId)
-      tasks.value.push(newTask)
+      const response = await tasksApi.createTask(taskData)
+      tasks.value.push(response)
+      return response
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to create task'
       throw error.value
@@ -146,36 +157,26 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function updateTask(taskId: string, updates: Partial<Task>) {
+  async function updateTask(id: string, taskData: Partial<Task>): Promise<Task> {
     loading.value = true
     error.value = null
-    console.log('Store updateTask:', taskId, typeof taskId)
 
     try {
-      const existingTask = tasks.value.find((t) => t.id === taskId)
-      if (!existingTask) {
-        throw new Error(`Task with ID ${taskId} not found`)
-      }
-
-      const updatedTask = await tasksApi.updateTask(taskId, {
-        ...existingTask,
-        ...updates,
-      })
-
-      const index = tasks.value.findIndex((t) => t.id === taskId)
+      const response = await tasksApi.updateTask(id, taskData)
+      const index = tasks.value.findIndex((t) => t.id === id)
       if (index !== -1) {
-        tasks.value[index] = updatedTask
+        tasks.value[index] = response
       }
+      return response
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to update task'
-      console.error('Error updating task:', e)
-      throw e
+      throw error.value
     } finally {
       loading.value = false
     }
   }
 
-  async function deleteTask(id: string) {
+  async function deleteTask(id: string): Promise<void> {
     loading.value = true
     error.value = null
 
@@ -191,49 +192,60 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  function setFilters(newFilters: TaskFilters) {
-    filters.value = newFilters
+  function setSearchQuery(query: string): void {
+    filters.value.search = query || ''
   }
 
-  // Сохраняем фильтры при изменении
-  watch(
-    () => filters.value,
-    (newFilters) => {
-      saveToLocalStorage('taskboard_filters', newFilters)
-    },
-    { deep: true },
-  )
+  function setFilters(newFilters: TaskFiltersInput) {
+    if (Object.keys(newFilters).length === 0) {
+      filters.value = {
+        search: '',
+        status: '',
+        priority: '',
+        assignedTo: '',
+        projectId: ''
+      }
+      return
+    }
 
-  // Сохраняем выбранного пользователя при изменении
-  watch(
-    () => selectedUserId.value,
-    (newUserId) => {
-      saveToLocalStorage('taskboard_selected_user', newUserId)
-    },
-  )
+    filters.value = {
+      search: newFilters.search ?? filters.value.search,
+      status: newFilters.status === undefined ? '' : newFilters.status,
+      priority: newFilters.priority === undefined ? '' : newFilters.priority,
+      assignedTo: newFilters.assignedTo ?? filters.value.assignedTo,
+      projectId: newFilters.projectId ?? filters.value.projectId
+    }
+  }
 
-  // Сохраняем сортировку при изменении
-  watch(
-    () => sort.value,
-    (newSort) => {
-      saveToLocalStorage('taskboard_sort', newSort)
-    },
-  )
+  function setFilter(
+    key: keyof TaskFilters,
+    value: TaskStatus | TaskPriority | string | undefined,
+  ): void {
+    setFilters({ [key]: value })
+  }
+
+  function setSort(field: keyof Task, order: 'asc' | 'desc' | null) {
+    sort.value = order ? { field, order } : null
+  }
 
   return {
     tasks,
     loading,
     error,
-    filters,
-    selectedUserId,
-    filteredTasks,
     tasksByStatus,
+    filteredTasks,
     filteredTasksByStatus,
-    fetchTasks,
     createTask,
     updateTask,
     deleteTask,
+    fetchTasks,
+    setSearchQuery,
+    setFilter,
     setFilters,
+    setSort,
     sort,
+    // Экспортируем состояние фильтров и поиска
+    searchQuery,
+    filters,
   }
 })

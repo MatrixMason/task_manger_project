@@ -10,14 +10,15 @@ defineOptions({
 
 const tasksStore = useTasksStore()
 
-const search = ref('')
-const selectedPriority = ref<TaskPriority | ''>('')
+const search = ref(tasksStore.searchQuery)
+const selectedPriority = ref<TaskPriority | null>(tasksStore.filters.priority)
 
-watch([search, selectedPriority], () => {
-  tasksStore.setFilters({
-    search: search.value,
-    priority: selectedPriority.value || undefined,
-  })
+watch([search], () => {
+  tasksStore.setSearchQuery(search.value)
+})
+
+watch([selectedPriority], () => {
+  tasksStore.setFilter('priority', selectedPriority.value)
 })
 </script>
 
@@ -34,14 +35,23 @@ watch([search, selectedPriority], () => {
 
     <div class="task-filters__priority">
       <select v-model="selectedPriority" class="task-filters__select">
-        <option value="">Все приоритеты</option>
+        <option :value="null">Все приоритеты</option>
         <option value="low">Низкий</option>
         <option value="medium">Средний</option>
         <option value="high">Высокий</option>
       </select>
     </div>
 
-    <BaseButton variant="secondary" @click="tasksStore.setFilters({})"> Сбросить фильтры </BaseButton>
+    <BaseButton 
+      variant="secondary" 
+      @click="() => {
+        search.value = ''
+        selectedPriority.value = null
+        tasksStore.setFilters({})
+      }"
+    >
+      Сбросить фильтры
+    </BaseButton>
   </div>
 </template>
 

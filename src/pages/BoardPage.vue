@@ -2,7 +2,6 @@
 import { ref, onMounted } from 'vue'
 import { useTasksStore } from '@/entities/task/model/tasks.store'
 import KanbanColumn from '@/widgets/KanbanBoard/ui/KanbanColumn.vue'
-import UserFilter from '@/entities/task/components/UserFilter.vue'
 import TaskFilters from '@/features/TaskFilters/ui/TaskFilters.vue'
 import TaskSort from '@/features/TaskSort/ui/TaskSort.vue'
 import type { Task } from '@/entities/task/model/types'
@@ -48,7 +47,6 @@ onMounted(() => {
       <div class="board-page__controls">
         <div class="board-page__filters">
           <TaskFilters @filter="tasksStore.setFilters" />
-          <UserFilter @filter="(userId) => (tasksStore.selectedUserId = userId)" />
           <TaskSort @sort="(sort) => (tasksStore.sort = sort)" />
         </div>
         <button class="btn btn--primary" @click="showAddTask = true">Добавить задачу</button>
