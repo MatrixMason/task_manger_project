@@ -34,7 +34,7 @@ async function handleDeleteProject(project: Project) {
 
 async function confirmDeleteProject() {
   if (!projectToDelete.value) return
-  
+
   try {
     await projectsStore.deleteProject(projectToDelete.value.id)
     projectToDelete.value = null
@@ -49,7 +49,7 @@ async function handleCreateProject(data: CreateProjectData) {
       ...data,
       status: 'active',
       teamMembers: [],
-      description: data.description || ''
+      description: data.description || '',
     })
   } catch (error) {
     console.error('Failed to create project:', error)
@@ -61,7 +61,7 @@ async function handleEditProject(data: CreateProjectData) {
 
   try {
     await projectsStore.updateProject(editingProject.value.id, {
-      ...data
+      ...data,
     })
     editingProject.value = undefined
   } catch (error) {
@@ -98,7 +98,7 @@ async function handleCreateProjectForm() {
       name: formData.value.name,
       description: formData.value.description,
       status: 'active',
-      teamMembers: []
+      teamMembers: [],
     })
     console.log('Project created successfully')
     showCreateModal.value = false
@@ -123,11 +123,13 @@ async function handleCreateProjectForm() {
       </div>
       <ProjectFilters
         :initial-filters="projectsStore.filters"
-        @filter="filters => {
-          projectsStore.filters.search = filters.search
-          projectsStore.filters.status = filters.status
-          projectsStore.filters.sortBy = filters.sortBy
-        }"
+        @filter="
+          (filters) => {
+            projectsStore.filters.search = filters.search
+            projectsStore.filters.status = filters.status
+            projectsStore.filters.sortBy = filters.sortBy
+          }
+        "
       />
     </header>
 
@@ -136,7 +138,12 @@ async function handleCreateProjectForm() {
       {{ projectsStore.error }}
     </div>
     <div v-else class="projects-list">
-      <div v-for="project in projectsStore.filteredProjects" :key="project.id" class="project-card" :class="{ 'project-card--loading': projectsStore.loading }">
+      <div
+        v-for="project in projectsStore.filteredProjects"
+        :key="project.id"
+        class="project-card"
+        :class="{ 'project-card--loading': projectsStore.loading }"
+      >
         <div class="project-info">
           <h3>{{ project.name }}</h3>
           <p>{{ project.description }}</p>
@@ -154,21 +161,21 @@ async function handleCreateProjectForm() {
           </div>
         </div>
         <div class="project-actions">
-          <BaseButton 
-            variant="secondary" 
-            size="sm" 
+          <BaseButton
+            variant="secondary"
+            size="sm"
             class="edit-button"
-            @click="openEditModal(project)" 
+            @click="openEditModal(project)"
             :disabled="projectsStore.loading"
           >
             <span v-if="projectsStore.loading" class="loading-spinner"></span>
             <span v-else>Редактировать</span>
           </BaseButton>
-          <BaseButton 
-            variant="danger" 
-            size="sm" 
+          <BaseButton
+            variant="danger"
+            size="sm"
             class="delete-button"
-            @click="handleDeleteProject(project)" 
+            @click="handleDeleteProject(project)"
             :disabled="projectsStore.loading"
           >
             <span v-if="projectsStore.loading" class="loading-spinner"></span>
@@ -188,12 +195,7 @@ async function handleCreateProjectForm() {
     <BaseModal v-model:show="showCreateModal" title="Создать проект">
       <form @submit.prevent="handleCreateProjectForm">
         <div class="form-group">
-          <BaseInput
-            id="name"
-            v-model="formData.name"
-            label="Название"
-            required
-          />
+          <BaseInput id="name" v-model="formData.name" label="Название" required />
         </div>
         <div class="form-group">
           <BaseTextarea
@@ -208,9 +210,7 @@ async function handleCreateProjectForm() {
           <BaseButton type="button" variant="secondary" size="md" @click="showCreateModal = false">
             Отмена
           </BaseButton>
-          <BaseButton type="submit" variant="primary" size="md">
-            Создать
-          </BaseButton>
+          <BaseButton type="submit" variant="primary" size="md"> Создать </BaseButton>
         </div>
       </form>
     </BaseModal>
@@ -261,7 +261,7 @@ async function handleCreateProjectForm() {
 
     h1 {
       font-size: 1.5rem;
-      color: v.$text-primary;
+      color: var(--text-primary);
       margin: 0;
     }
   }
@@ -275,7 +275,7 @@ async function handleCreateProjectForm() {
 
 .project-card {
   position: relative;
-  
+
   &--loading::after {
     content: '';
     position: absolute;
@@ -287,19 +287,26 @@ async function handleCreateProjectForm() {
     border-radius: v.$border-radius-lg;
     z-index: 1;
   }
-  background: v.$background-secondary;
-  border-radius: v.$border-radius-lg;
+  background: var(--bg-secondary);
+  border-radius: var(--radius-lg);
   padding: v.$spacing-lg;
-  box-shadow: v.$shadow-sm;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease;
+  border: 1px solid var(--border-color);
+
+  .dark & {
+    background: var(--bg-secondary);
+    border-color: var(--border-color);
+  }
 
   h3 {
     margin: 0 0 v.$spacing-sm;
-    color: v.$text-primary;
+    color: var(--text-primary);
   }
 
   p {
     margin: 0;
-    color: v.$text-secondary;
+    color: var(--text-secondary);
     font-size: 0.875rem;
   }
 }
@@ -310,7 +317,7 @@ async function handleCreateProjectForm() {
   h4 {
     margin: v.$spacing-lg 0 v.$spacing-sm;
     font-size: 1rem;
-    color: v.$text-primary;
+    color: var(--text-primary);
   }
 }
 
@@ -331,13 +338,19 @@ async function handleCreateProjectForm() {
   justify-content: space-between;
   align-items: center;
   padding: v.$spacing-sm;
-  background: v.$background-primary;
-  border-radius: v.$border-radius-sm;
+  background: var(--bg-primary);
+  border-radius: var(--radius-sm);
   font-size: 0.875rem;
+  border: 1px solid var(--border-color);
+
+  .dark & {
+    background: var(--bg-tertiary);
+    border-color: var(--border-color);
+  }
 }
 
 .task-title {
-  color: v.$text-primary;
+  color: var(--text-primary);
 }
 
 .task-status {
@@ -362,7 +375,7 @@ async function handleCreateProjectForm() {
 }
 
 .no-tasks {
-  color: v.$text-secondary;
+  color: var(--text-secondary);
   font-size: 0.875rem;
   font-style: italic;
 }
@@ -378,8 +391,12 @@ async function handleCreateProjectForm() {
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .project-actions {
