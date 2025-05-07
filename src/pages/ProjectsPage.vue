@@ -154,11 +154,23 @@ async function handleCreateProjectForm() {
           </div>
         </div>
         <div class="project-actions">
-          <BaseButton variant="secondary" size="sm" @click="openEditModal(project)" :disabled="projectsStore.loading">
+          <BaseButton 
+            variant="secondary" 
+            size="sm" 
+            class="edit-button"
+            @click="openEditModal(project)" 
+            :disabled="projectsStore.loading"
+          >
             <span v-if="projectsStore.loading" class="loading-spinner"></span>
             <span v-else>Редактировать</span>
           </BaseButton>
-          <BaseButton variant="danger" size="sm" @click="handleDeleteProject(project)" :disabled="projectsStore.loading">
+          <BaseButton 
+            variant="danger" 
+            size="sm" 
+            class="delete-button"
+            @click="handleDeleteProject(project)" 
+            :disabled="projectsStore.loading"
+          >
             <span v-if="projectsStore.loading" class="loading-spinner"></span>
             <span v-else>Удалить</span>
           </BaseButton>
@@ -372,8 +384,46 @@ async function handleCreateProjectForm() {
 
 .project-actions {
   display: flex;
-  justify-content: flex-end;
-  gap: v.$spacing-md;
+  gap: 1rem;
+  margin-top: 1rem;
+
+  .edit-button {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.875rem;
+    border: 1px solid var(--color-primary);
+    border-radius: 4px;
+    color: var(--color-primary);
+    background: transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--color-primary);
+      color: white;
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+
+  .delete-button {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.875rem;
+    border: 1px solid var(--color-error);
+    border-radius: 4px;
+    color: var(--color-error);
+    background: transparent;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: var(--color-error);
+      color: white;
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
+  }
 }
 
 .loading,

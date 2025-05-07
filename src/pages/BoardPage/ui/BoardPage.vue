@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useTasksStore } from '@/entities/task/model/tasks.store'
 import KanbanColumn from '@/widgets/KanbanBoard/ui/KanbanColumn.vue'
 import TaskFilters from '@/features/TaskFilters/ui/TaskFilters.vue'
@@ -8,6 +9,7 @@ import type { Task } from '@/entities/task/model/types'
 import TaskFormModal from '@/features/TaskForm/ui/TaskFormModal.vue'
 
 const tasksStore = useTasksStore()
+const { loading, error, filteredTasksByStatus } = storeToRefs(tasksStore)
 const showAddTask = ref(false)
 const showTaskForm = ref(false)
 const selectedTask = ref<Task | undefined>()
@@ -24,9 +26,14 @@ function handleTaskClick(task: Task) {
   showTaskForm.value = true
 }
 
-function handleTaskSaved() {
-  tasksStore.fetchTasks()
+async function handleTaskSaved() {
+  // Refresh tasks list after save
+  await tasksStore.fetchTasks()
+  
+  // Close the form
   showTaskForm.value = false
+  selectedTask.value = undefined
+  showAddTask.value = false
 }
 
 function handleTaskDelete(taskId: number) {
@@ -46,15 +53,25 @@ onMounted(() => {
       </div>
       <div class="board-page__controls">
         <div class="board-page__filters">
-          <TaskFilters @filter="tasksStore.setFilters" />
-          <TaskSort @sort="(sort) => (tasksStore.sort = sort)" />
+          <TaskFilters @filter="(filters) => tasksStore.setFilters({ ...filters, projectId: filters.projectId ? Number(filters.projectId) : undefined })" />
+          <TaskSort @sort="(sort) => tasksStore.sortTasks(sort.field, sort.order)" />
         </div>
         <button class="btn btn--primary" @click="showAddTask = true">Добавить задачу</button>
       </div>
     </header>
-    <div v-if="tasksStore.loading" class="board-page__loading">Загрузка задач...</div>
-    <div v-else-if="tasksStore.error" class="board-page__error">
-      {{ tasksStore.error }}
+
+    <!-- Отображаем ошибку -->
+    <div v-if="error" class="board-page__error">
+      {{ error }}
+    </div>
+
+    <!-- Отображаем состояние загрузки -->
+    <div v-if="loading" class="board-page__loading">
+      Загрузка...
+    </div>
+    <div v-if="loading" class="board-page__loading">Загрузка задач...</div>
+    <div v-else-if="error" class="board-page__error">
+      {{ error }}
     </div>
     <div v-else class="board">
       <KanbanColumn
@@ -62,7 +79,7 @@ onMounted(() => {
         :key="status"
         :title="columnTitles[status]"
         :status="status"
-        :tasks="tasksStore.filteredTasksByStatus[status]"
+        :tasks="filteredTasksByStatus[status]"
         @task-click="handleTaskClick"
         @task-delete="handleTaskDelete"
         @move-task="({ taskId, status, position }) => tasksStore.moveTask(taskId, status, position)"
@@ -78,38 +95,40 @@ onMounted(() => {
 @use '@/app/styles/variables' as v;
 
 .board-page {
-  padding: $spacing-lg;
-  height: 100%;
+  padding: 20px;
 
   &__header {
-    margin-bottom: $spacing-lg;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
 
   &__title {
     h1 {
       margin: 0;
-      margin-bottom: v.$spacing-md;
+      font-size: 24px;
+      font-weight: 600;
     }
   }
 
   &__controls {
     display: flex;
-    justify-content: space-between;
+    gap: 16px;
     align-items: center;
-    gap: v.$spacing-lg;
   }
 
   &__filters {
     display: flex;
+    gap: 16px;
     align-items: center;
-    gap: v.$spacing-md;
-    flex: 1;
   }
 
-  &__loading,
-  &__error {
-    text-align: center;
-    padding: v.$spacing-xl;
+  &__board {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 20px;
     color: v.$text-secondary;
   }
 
