@@ -2,7 +2,9 @@
 type OptionValue = string | number | null | undefined
 
 interface GenericOption {
-  [key: string]: string | number | boolean | undefined
+  value: OptionValue
+  label: string
+  [key: string]: OptionValue | string
 }
 
 const props = defineProps<{
@@ -24,29 +26,23 @@ const emit = defineEmits<{
 
 function getValue(option: GenericOption): OptionValue {
   if (props.optionValue) {
-    const value = option[props.optionValue]
-    return typeof value === 'string' || typeof value === 'number' ? value : null
+    const value = option[props.optionValue] as string | number | null
+    return value === '' ? null : value
   }
-  return typeof option === 'object' && 'value' in option 
-    ? (typeof option.value === 'string' || typeof option.value === 'number' ? option.value : null)
-    : null
+  return option.value
 }
 
 function getLabel(option: GenericOption): string {
   if (props.optionLabel) {
-    const label = option[props.optionLabel]
-    return typeof label === 'string' || typeof label === 'number' ? String(label) : ''
+    return String(option[props.optionLabel])
   }
-  return typeof option === 'object' && 'label' in option 
-    ? (typeof option.label === 'string' || typeof option.label === 'number' ? String(option.label) : '')
-    : String(option)
+  return option.label
 }
 
 function handleChange(event: Event) {
   const target = event.target as HTMLSelectElement
-  const value = target.value === '' ? null : target.value
-  const numValue = value !== null && !isNaN(Number(value)) ? Number(value) : value
-  emit('update:modelValue', numValue)
+  const value = target.value
+  emit('update:modelValue', value === '' ? null : value)
 }
 </script>
 
@@ -67,7 +63,7 @@ function handleChange(event: Event) {
       <option
         v-for="option in options"
         :key="String(getValue(option))"
-        :value="String(getValue(option))"
+        :value="getValue(option) === null ? '' : getValue(option)"
       >
         {{ getLabel(option) }}
       </option>
@@ -137,6 +133,4 @@ function handleChange(event: Event) {
     }
   }
 }
-
-
 </style>
