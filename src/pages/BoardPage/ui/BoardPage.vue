@@ -9,7 +9,7 @@ import type { Task } from '@/entities/task/model/types'
 import TaskFormModal from '@/features/TaskForm/ui/TaskFormModal.vue'
 
 const tasksStore = useTasksStore()
-const { loading, error, filteredTasksByStatus } = storeToRefs(tasksStore)
+const { loading, error } = storeToRefs(tasksStore)
 const showAddTask = ref(false)
 const showTaskForm = ref(false)
 const selectedTask = ref<Task | undefined>()
@@ -36,8 +36,17 @@ async function handleTaskSaved() {
   showAddTask.value = false
 }
 
-function handleTaskDelete(taskId: number) {
+async function handleTaskDelete(taskId: number) {
   console.log('Task deleted:', taskId)
+}
+
+async function handleMoveTask(data: { taskId: string; status: Task['status']; position: number }) {
+  try {
+    // Update task status in the store without full refresh
+    await tasksStore.updateTask(data.taskId, { status: data.status }, false)
+  } catch (error) {
+    console.error('Failed to move task:', error)
+  }
 }
 
 onMounted(() => {
@@ -79,10 +88,10 @@ onMounted(() => {
         :key="status"
         :title="columnTitles[status]"
         :status="status"
-        :tasks="filteredTasksByStatus[status]"
+        :tasks="tasksStore.filteredTasksByStatus[status]"
         @task-click="handleTaskClick"
         @task-delete="handleTaskDelete"
-        @move-task="({ taskId, status, position }) => tasksStore.moveTask(taskId, status, position)"
+        @move-task="handleMoveTask"
       />
     </div>
 

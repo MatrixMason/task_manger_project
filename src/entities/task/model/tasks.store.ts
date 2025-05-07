@@ -187,8 +187,10 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function updateTask(taskId: number | string, data: Partial<Task>): Promise<Task> {
-    loading.value = true
+  async function updateTask(taskId: number | string, data: Partial<Task>, showLoading = true): Promise<Task> {
+    if (showLoading) {
+      loading.value = true
+    }
     error.value = null
 
     try {
@@ -197,15 +199,27 @@ export const useTasksStore = defineStore('tasks', () => {
         throw new Error('Task not found')
       }
 
-      const updatedTask = await tasksApi.updateTask(Number(taskId), data)
+      // Оптимистичное обновление
+      const currentTask = tasks.value[taskIndex]
+      const optimisticUpdate = { ...currentTask, ...data }
+      tasks.value[taskIndex] = optimisticUpdate
 
-      // Replace the entire task object to ensure reactivity
-      tasks.value[taskIndex] = { ...updatedTask }
+      // Реальное обновление на сервере
+      const updatedTask = await tasksApi.updateTask(Number(taskId), data)
+      
+      // Обновляем если есть различия с сервером
+      if (JSON.stringify(updatedTask) !== JSON.stringify(optimisticUpdate)) {
+        tasks.value[taskIndex] = { ...updatedTask }
+      }
 
       return updatedTask
     } catch (error) {
       console.error('Failed to update task:', error)
       throw error
+    } finally {
+      if (showLoading) {
+        loading.value = false
+      }
     }
   }
 
