@@ -5,24 +5,28 @@
       "title": "Разработка дизайн-системы",
       "description": "Создать базовые компоненты и документацию",
       "status": "in-progress",
-      "priority": "medium",
+      "priority": "low",
       "createdAt": "2025-04-10T10:00:00.000Z",
-      "updatedAt": "2025-05-02T17:45:07.549Z",
+      "updatedAt": "2025-05-07T09:20:38.030Z",
       "assignedTo": 4,
-      "deadline": null,
-      "projectId": "1ed7"
+      "deadline": "2025-05-08T09:41",
+      "projectId": 1,
+      "completed": false,
+      "attachments": []
     },
     {
       "id": "2",
       "title": "Настройка CI/CD",
       "description": "Настроить автоматическую сборку и деплой",
       "status": "todo",
-      "priority": "high",
+      "priority": "medium",
       "createdAt": "2025-04-10T11:00:00.000Z",
-      "updatedAt": "2025-05-02T17:47:27.066Z",
+      "updatedAt": "2025-05-07T09:31:23.194Z",
       "assignedTo": "77dd",
-      "deadline": "2025-05-24T20:47",
-      "projectId": "1ed7"
+      "deadline": "2025-05-25T09:42",
+      "projectId": "1",
+      "attachments": [],
+      "completed": false
     },
     {
       "id": "3",
@@ -31,9 +35,9 @@
       "status": "done",
       "priority": "low",
       "createdAt": "2025-04-10T12:00:00.000Z",
-      "updatedAt": "2025-05-02T17:36:41.780Z",
+      "updatedAt": "2025-05-07T06:18:31.497Z",
       "assignedTo": 2,
-      "deadline": "2025-05-30T20:36",
+      "deadline": "2025-05-14T10:50",
       "projectId": "1ed7"
     },
     {
@@ -42,11 +46,11 @@
       "description": "ОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\n",
       "status": "todo",
       "createdAt": "2025-04-10T12:00:00.000Z",
-      "updatedAt": "2025-05-02T17:35:52.969Z",
+      "updatedAt": "2025-05-07T06:43:18.664Z",
       "priority": "low",
       "assignedTo": 2,
       "projectId": 1,
-      "deadline": "2025-05-17T20:35"
+      "deadline": "2025-05-31T09:34"
     },
     {
       "id": "9",
@@ -61,7 +65,7 @@
       "deadline": "2025-05-10T20:36"
     },
     {
-      "id": 10,
+      "id": "10",
       "title": "Задача1",
       "description": "Описание",
       "status": "in-progress",
@@ -69,7 +73,10 @@
       "assignedTo": "e209",
       "projectId": 1,
       "createdAt": "2025-05-02T17:35:03.603Z",
-      "updatedAt": "2025-05-02T17:35:03.603Z"
+      "updatedAt": "2025-05-07T08:33:38.340Z",
+      "deadline": "2025-05-09T11:33",
+      "attachments": [],
+      "completed": false
     },
     {
       "id": "11",
@@ -95,7 +102,7 @@
     {
       "id": "2",
       "name": "TEST",
-      "description": "счсчс",
+      "description": "счсчс1111",
       "status": "active",
       "teamMembers": []
     },
@@ -123,30 +130,96 @@
       "updatedAt": "2025-05-02T17:23:48.613Z"
     }
   ],
+  "comments": [
+    {
+      "id": "7871",
+      "taskId": "2",
+      "userId": "03dc",
+      "createdAt": "2025-05-07T08:05:34.726Z",
+      "updatedAt": "2025-05-07T08:05:34.726Z",
+      "attachments": []
+    },
+    {
+      "id": "3a44",
+      "taskId": "2",
+      "userId": "03dc",
+      "createdAt": "2025-05-07T08:10:14.670Z",
+      "updatedAt": "2025-05-07T08:10:14.670Z",
+      "attachments": []
+    },
+    {
+      "id": "d694",
+      "taskId": "3",
+      "userId": "03dc",
+      "createdAt": "2025-05-07T08:13:22.658Z",
+      "updatedAt": "2025-05-07T08:13:22.658Z",
+      "attachments": []
+    },
+    {
+      "id": "4fae",
+      "taskId": "1",
+      "text": "55",
+      "userId": "03dc",
+      "createdAt": "2025-05-07T08:28:31.866Z",
+      "updatedAt": "2025-05-07T08:28:31.866Z",
+      "attachments": []
+    },
+    {
+      "id": "a210",
+      "taskId": "1",
+      "text": "11",
+      "userId": "03dc",
+      "createdAt": "2025-05-07T08:30:30.997Z",
+      "updatedAt": "2025-05-07T08:30:30.997Z",
+      "attachments": []
+    },
+    {
+      "id": "b9b0",
+      "taskId": "1",
+      "text": "4444",
+      "userId": "03dc",
+      "createdAt": "2025-05-07T09:20:11.262Z",
+      "updatedAt": "2025-05-07T09:20:11.262Z",
+      "attachments": []
+    },
+    {
+      "id": "7911",
+      "taskId": "1",
+      "text": "7777777777",
+      "userId": "03dc",
+      "createdAt": "2025-05-07T09:20:24.682Z",
+      "updatedAt": "2025-05-07T09:20:24.682Z",
+      "attachments": []
+    }
+  ],
   "users": [
     {
       "id": "1",
       "name": "Иван Петров",
       "email": "ivan@example.com",
-      "role": "admin"
+      "role": "admin",
+      "password": "$2b$10$m6fU2tZ33wk.uvsZn0y1ouezwwAnSRBu9.AOAlYQUWViTqBNpEa26"
     },
     {
       "id": "2",
       "name": "Петр Иванов",
       "email": "petr@example.com",
-      "role": "developer"
+      "role": "developer",
+      "password": "$2b$10$m6fU2tZ33wk.uvsZn0y1ouezwwAnSRBu9.AOAlYQUWViTqBNpEa26"
     },
     {
       "id": "3",
       "name": "Петр Петров",
       "email": "petr.p@example.com",
-      "role": "manager"
+      "role": "manager",
+      "password": "$2b$10$m6fU2tZ33wk.uvsZn0y1ouezwwAnSRBu9.AOAlYQUWViTqBNpEa26"
     },
     {
       "id": "4",
       "name": "Ирина Дубцова",
       "email": "irina.d@example.com",
-      "role": "designer"
+      "role": "designer",
+      "password": "$2b$10$m6fU2tZ33wk.uvsZn0y1ouezwwAnSRBu9.AOAlYQUWViTqBNpEa26"
     },
     {
       "id": "77dd",
@@ -180,6 +253,24 @@
       "password": "$2b$10$m6fU2tZ33wk.uvsZn0y1ouezwwAnSRBu9.AOAlYQUWViTqBNpEa26",
       "createdAt": "2025-05-02T16:44:25.141Z",
       "updatedAt": "2025-05-02T16:44:25.144Z"
+    },
+    {
+      "id": "a858",
+      "name": "Test",
+      "email": "test911@test.ru",
+      "role": "developer",
+      "password": "$2b$10$1Rm.wPnwu4YSpTDd7PFAx.RZoHkU0wxOF6Z08QpcHjsZNx1gcfqlq",
+      "createdAt": "2025-05-07T06:33:56.060Z",
+      "updatedAt": "2025-05-07T06:33:56.060Z"
+    },
+    {
+      "id": "03dc",
+      "name": "lkdslk",
+      "email": "ya@ya.ru",
+      "role": "designer",
+      "password": "$2b$10$zcevaBnsPvEJ3j6b2Cxu0OuRU.9rxScSiToeCuc/OleYJsovk8yny",
+      "createdAt": "2025-05-07T06:53:33.608Z",
+      "updatedAt": "2025-05-07T06:53:33.608Z"
     }
   ]
 }

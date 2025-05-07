@@ -1,4 +1,4 @@
-import { api } from './axios'
+import { apiInstance } from './base'
 import type { User, UserWithPassword, AuthResponse, LoginCredentials } from '@/entities/user/model/types'
 import { passwordUtils } from '@/shared/lib/password'
 
@@ -8,18 +8,32 @@ export interface RegisterData extends LoginCredentials {
 }
 
 export const usersApi = {
+  async getCurrentUser(): Promise<User> {
+    const token = localStorage.getItem('auth_token')
+    if (!token) throw new Error('Not authenticated')
+
+    try {
+      const { userId } = JSON.parse(atob(token))
+      const user = await this.getUser(userId)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { password, ...userWithoutPassword } = user
+      return userWithoutPassword
+    } catch {
+      throw new Error('Invalid token')
+    }
+  },
   async getAll() {
-    const { data } = await api.get<User[]>('/users')
+    const { data } = await apiInstance.get<User[]>('/users')
     return data
   },
 
   async getUser(id: string | number) {
-    const { data: user } = await api.get<UserWithPassword>(`/users/${id}`)
+    const { data: user } = await apiInstance.get<UserWithPassword>(`/users/${id}`)
     return user
   },
 
   async register(data: RegisterData): Promise<AuthResponse> {
-    const { data: users } = await api.get<User[]>('/users')
+    const { data: users } = await apiInstance.get<User[]>('/users')
     if (users.some((u) => u.email === data.email)) {
       throw new Error('Пользователь с таким email уже существует')
     }
@@ -36,7 +50,7 @@ export const usersApi = {
       updatedAt: new Date().toISOString(),
     }
 
-    const { data: createdUser } = await api.post<UserWithPassword>('/users', newUser)
+    const { data: createdUser } = await apiInstance.post<UserWithPassword>('/users', newUser)
     // Удаляем пароль из ответа
     const { password: _password, ...userWithoutPassword } = createdUser // eslint-disable-line @typescript-eslint/no-unused-vars
     const accessToken = btoa(JSON.stringify({ userId: createdUser.id, timestamp: Date.now() }))
@@ -48,7 +62,7 @@ export const usersApi = {
   },
 
   async login({ email, password }: LoginCredentials): Promise<AuthResponse> {
-    const { data: users } = await api.get<UserWithPassword[]>(`/users?email=${email}`)
+    const { data: users } = await apiInstance.get<UserWithPassword[]>(`/users?email=${email}`)
     const user = users[0]
 
     if (!user) {
@@ -56,7 +70,7 @@ export const usersApi = {
     }
 
     // Проверяем пароль, сравнивая его с хешем
-    if (!(await passwordUtils.compare(password, user.password))) {
+    if (!user.password || !(await passwordUtils.compare(password, user.password))) {
       throw new Error('Неверный email или пароль')
     }
 
