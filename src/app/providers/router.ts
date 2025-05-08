@@ -17,6 +17,18 @@ declare module 'vue-router' {
 
 const routes: RouteRecordRaw[] = [
   {
+    path: '/',
+    redirect: '/dashboard'
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: BoardPage,
+    meta: {
+      requiresAuth: true
+    }
+  },
+  {
     path: '/login',
     name: 'login',
     component: LoginPage
@@ -26,12 +38,9 @@ const routes: RouteRecordRaw[] = [
     name: 'projects',
     component: ProjectsPage,
     meta: {
-      requiresAuth: true
+      requiresAuth: true,
+      requiredPermissions: ['projects.view']
     }
-  },
-  {
-    path: '/',
-    redirect: '/board'
   },
   {
     path: '/board',
@@ -62,26 +71,39 @@ router.beforeEach(async (to, _from, next) => {
   const usersStore = useUsersStore()
   const { hasPermission } = usePermissions()
 
-  // Если пользователь не авторизован и пытается зайти на защищенную страницу
-  if (to.meta.requiresAuth && !usersStore.isAuthenticated) {
+  // Проверяем авторизацию
+  const isAuthenticated = usersStore.isAuthenticated
+
+  // Если это страница логина
+  if (to.name === 'login') {
+    if (isAuthenticated) {
+      return next('/board')
+    }
+    return next()
+  }
+
+  // Если маршрут не требует авторизации
+  if (!to.meta.requiresAuth) {
+    return next()
+  }
+
+  // Если пользователь не авторизован
+  if (!isAuthenticated) {
     return next('/login')
   }
 
-  // Если пользователь авторизован и пытается зайти на страницу логина
-  if (to.name === 'login' && usersStore.isAuthenticated) {
-    return next('/')
-  }
-
-  // Проверяем права доступа
   if (to.meta.requiredPermissions) {
     const permissions = to.meta.requiredPermissions as Permission[]
-    if (!permissions.every(permission => hasPermission(permission))) {
-      // Если нет прав доступа, перенаправляем на проекты
-      return next('/projects')
+    const hasRequiredPermissions = permissions.every(permission => hasPermission(permission))
+    
+    if (!hasRequiredPermissions) {
+      console.warn('Access denied:', { route: to.path, requiredPermissions: permissions })
+      return next('/dashboard')
     }
   }
 
-  next()
+  // Все проверки пройдены
+  return next()
 })
 
 export default router

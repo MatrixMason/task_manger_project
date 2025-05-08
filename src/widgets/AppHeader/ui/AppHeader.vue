@@ -23,10 +23,18 @@ async function handleLogout() {
         <RouterLink to="/" class="app-header__logo">
           Task Manager
         </RouterLink>
-        <RouterLink to="/board" class="app-header__link">
+        <RouterLink 
+          v-if="isAuthenticated && hasPermission('tasks.view')"
+          to="/board" 
+          class="app-header__link"
+        >
           Доска
         </RouterLink>
-        <RouterLink to="/projects" class="app-header__link">
+        <RouterLink 
+          v-if="isAuthenticated && hasPermission('projects.view')"
+          to="/projects" 
+          class="app-header__link"
+        >
           Проекты
         </RouterLink>
         <RouterLink

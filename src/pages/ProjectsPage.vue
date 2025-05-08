@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { usePermissions } from '@/features/Auth/lib/usePermissions'
 import { useProjectsStore } from '@/entities/project/model/projects.store'
 import { useTasksStore } from '@/entities/task/model/tasks.store'
 import type { Project, CreateProjectData } from '@/entities/project/model/types'
@@ -12,6 +13,7 @@ import ProjectFilters from '@/features/ProjectFilters/ui/ProjectFilters.vue'
 import ConfirmModal from '@/shared/ui/Modal/ConfirmModal.vue'
 
 const projectsStore = useProjectsStore()
+const { hasPermission } = usePermissions()
 const tasksStore = useTasksStore()
 const showProjectModal = ref(false)
 const editingProject = ref<Project | undefined>()
@@ -28,6 +30,7 @@ onMounted(async () => {
 })
 
 async function handleDeleteProject(project: Project) {
+  if (!hasPermission('projects.delete')) return
   projectToDelete.value = project
   showDeleteConfirm.value = true
 }
@@ -44,6 +47,7 @@ async function confirmDeleteProject() {
 }
 
 async function handleCreateProject(data: CreateProjectData) {
+  if (!hasPermission('projects.create')) return
   try {
     await projectsStore.createProject({
       ...data,
@@ -57,6 +61,7 @@ async function handleCreateProject(data: CreateProjectData) {
 }
 
 async function handleEditProject(data: CreateProjectData) {
+  if (!hasPermission('projects.edit')) return
   if (!editingProject.value) return
 
   try {
@@ -119,7 +124,13 @@ async function handleCreateProjectForm() {
     <header class="projects-header">
       <div class="header-title">
         <h1>Проекты</h1>
-        <button class="btn btn--primary" @click="openCreateModal">Создать проект</button>
+        <button 
+          v-if="hasPermission('projects.create')"
+          class="btn btn--primary" 
+          @click="openCreateModal"
+        >
+          Создать проект
+        </button>
       </div>
       <ProjectFilters
         :initial-filters="projectsStore.filters"
@@ -161,26 +172,24 @@ async function handleCreateProjectForm() {
           </div>
         </div>
         <div class="project-actions">
-          <BaseButton
-            variant="secondary"
-            size="sm"
-            class="edit-button"
+          <button 
+            v-if="hasPermission('projects.edit')"
+            class="btn btn--secondary" 
             @click="openEditModal(project)"
             :disabled="projectsStore.loading"
           >
             <span v-if="projectsStore.loading" class="loading-spinner"></span>
             <span v-else>Редактировать</span>
-          </BaseButton>
-          <BaseButton
-            variant="danger"
-            size="sm"
-            class="delete-button"
+          </button>
+          <button 
+            v-if="hasPermission('projects.delete')"
+            class="btn btn--danger" 
             @click="handleDeleteProject(project)"
             :disabled="projectsStore.loading"
           >
             <span v-if="projectsStore.loading" class="loading-spinner"></span>
             <span v-else>Удалить</span>
-          </BaseButton>
+          </button>
         </div>
       </div>
     </div>

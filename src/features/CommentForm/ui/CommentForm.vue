@@ -3,7 +3,7 @@
     <div class="form-field">
       <textarea
         v-model="text"
-        placeholder="Write a comment..."
+        placeholder="Напишите комментарий..."
         :disabled="loading"
         required
       />
@@ -14,7 +14,7 @@
     </div>
 
     <button type="submit" :disabled="loading || !text.trim()">
-      {{ loading ? 'Sending...' : 'Send' }}
+      {{ loading ? 'Отправка...' : 'Отправить' }}
     </button>
   </form>
 </template>
@@ -48,7 +48,7 @@ async function handleSubmit() {
     text.value = ''
   } catch (e) {
     console.error('Failed to add comment:', e)
-    error.value = 'Failed to add comment'
+    error.value = 'Не удалось добавить комментарий'
   } finally {
     loading.value = false
   }
@@ -77,19 +77,17 @@ textarea {
   color: var(--text-primary);
   transition: all 0.2s ease;
 
-  &:hover,
-  &:focus {
-    background-color: var(--color-primary);
-    color: var(--text-on-primary);
-    border-color: var(--color-primary);
-    outline: none;
+  &:hover {
+    border-color: var(--border-color-hover);
   }
-}
 
-textarea:focus {
-  outline: none;
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 0.25rem var(--color-primary-hover);
+  &:focus {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    border-color: var(--border-color-hover);
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .error-message {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { usePermissions } from '@/features/Auth/lib/usePermissions'
 import { ref, watch, onMounted } from 'vue'
 import { useTasksStore } from '@/entities/task/model/tasks.store'
 import type { Project, CreateProjectData } from '@/entities/project/model/types'
@@ -24,6 +25,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<Emits>()
+
+const { hasPermission } = usePermissions()
 
 const formData = ref<CreateProjectData>({
   name: '',
@@ -76,6 +79,7 @@ function handleClose() {
 
 <template>
   <BaseModal
+    v-if="hasPermission(project ? 'projects.edit' : 'projects.create')"
     :show="show"
     :title="project ? 'Редактирование проекта' : 'Новый проект'"
     @update:show="handleClose"
