@@ -161,9 +161,16 @@ function handleClose() {
     justify-content: space-between;
     align-items: center;
     padding: v.$spacing-sm;
-    background: v.$background-primary;
-    border-radius: v.$border-radius-sm;
+    background: var(--bg-primary);
+    border-radius: var(--radius-sm);
     font-size: 0.875rem;
+    border: 1px solid var(--border-color);
+
+    .dark & {
+      background: var(--bg-tertiary);
+      border-color: var(--border-color);
+    }
+
   }
 
   .task-title {
@@ -176,18 +183,36 @@ function handleClose() {
     font-size: 0.75rem;
     
     &.status-todo {
-      background: v.$status-todo;
-      color: v.$text-primary;
+      background: var(--status-todo-bg);
+      color: var(--text-primary);
+
+      .dark & {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+      }
     }
     
     &.status-in-progress {
-      background: v.$status-in-progress;
-      color: v.$text-primary;
+      background: var(--status-in-progress-bg);
+      color: var(--text-on-primary);
+
+      .dark & {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+      }
     }
     
     &.status-done {
-      background: v.$status-done;
-      color: v.$text-primary;
+      background: var(--status-done-bg);
+      color: var(--text-on-primary);
+
+      .dark & {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+      }
     }
   }
 

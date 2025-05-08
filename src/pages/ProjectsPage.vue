@@ -359,18 +359,18 @@ async function handleCreateProjectForm() {
   font-size: 0.75rem;
 
   &.status-todo {
-    background: v.$status-todo;
-    color: v.$text-primary;
+    background: var(--status-todo-bg);
+    color: var(--text-primary);
   }
 
   &.status-in-progress {
-    background: v.$status-in-progress;
-    color: v.$text-primary;
+    background: var(--status-in-progress-bg);
+    color: var(--text-primary);
   }
 
   &.status-done {
-    background: v.$status-done;
-    color: v.$text-primary;
+    background: var(--status-done-bg);
+    color: var(--text-primary);
   }
 }
 
