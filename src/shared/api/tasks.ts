@@ -7,9 +7,18 @@ interface CreateTaskData {
 }
 
 interface UpdatePositionData {
-  taskId: number
+  taskId: string
   status: TaskStatus
   position: number
+}
+
+function getNextId(tasks: Task[]): string {
+  const maxId = Math.max(...tasks.map(task => {
+    const id = typeof task.id === 'string' ? parseInt(task.id, 10) : task.id
+    return isNaN(id) ? 0 : id
+  }), 0)
+  const nextId = maxId + 1
+  return nextId.toString().padStart(1, '0')
 }
 
 export const tasksApi = {
@@ -18,7 +27,7 @@ export const tasksApi = {
     return data
   },
 
-  async getTaskById(id: number) {
+  async getTaskById(id: string) {
     const { data } = await api.get<Task>(`/tasks/${id}`)
     return data
   },
@@ -37,8 +46,12 @@ export const tasksApi = {
     const attachments = await Promise.all(attachmentPromises)
     const now = new Date().toISOString()
 
+    const { data: tasks } = await api.get<Task[]>('/tasks')
+    const nextId = getNextId(tasks)
+
     const taskData = {
       ...data,
+      id: nextId,
       completed: false,
       createdAt: now,
       updatedAt: now,
@@ -55,9 +68,9 @@ export const tasksApi = {
     return response.data
   },
 
-  async updateTask(id: number, task: Partial<Task>): Promise<Task> {
+  async updateTask(id: string, task: Partial<Task>): Promise<Task> {
     try {
-      if (!id || typeof id !== 'number') {
+      if (!id || typeof id !== 'string') {
         throw new Error(`Invalid task ID: ${id}`)
       }
       console.log('API updateTask:', { id, task })
@@ -114,7 +127,7 @@ export const tasksApi = {
     )
   },
 
-  async deleteTask(id: number): Promise<void> {
+  async deleteTask(id: string): Promise<void> {
     await api.delete(`/tasks/${id}`)
   },
 }
