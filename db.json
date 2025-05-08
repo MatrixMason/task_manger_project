@@ -2,30 +2,30 @@
   "tasks": [
     {
       "id": "1",
-      "title": "Разработка дизайн-системы444",
+      "title": "Разработка дизайн-системы",
       "description": "Создать базовые компоненты и документацию",
-      "status": "done",
+      "status": "todo",
       "priority": "low",
       "createdAt": "2025-04-10T10:00:00.000Z",
-      "updatedAt": "2025-05-07T15:38:22.149Z",
-      "assignedTo": 4,
+      "updatedAt": "2025-05-08T08:01:56.735Z",
+      "assignedTo": "4",
       "deadline": "2025-05-08T09:41",
-      "projectId": 1,
+      "projectId": "1",
       "completed": false,
       "attachments": [],
       "position": 1
     },
     {
       "id": "2",
-      "title": "Настройка CI/CВ111111111",
-      "description": "Настроить автоматическую сборку и деплой",
-      "status": "todo",
+      "title": "ЗАДАЧА 2",
+      "description": "ипапаапап",
+      "status": "done",
       "priority": "medium",
       "createdAt": "2025-04-10T11:00:00.000Z",
-      "updatedAt": "2025-05-07T16:11:57.984Z",
+      "updatedAt": "2025-05-08T13:19:05.182Z",
       "assignedTo": "77dd",
-      "deadline": "2025-05-25T09:42",
-      "projectId": "1",
+      "deadline": "2025-05-16T12:25",
+      "projectId": "4",
       "attachments": [],
       "completed": false,
       "position": 0
@@ -34,7 +34,7 @@
       "id": "3",
       "title": "Написание тестов",
       "description": "Покрыть основной функционал unit-тестами",
-      "status": "done",
+      "status": "in-progress",
       "priority": "low",
       "createdAt": "2025-04-10T12:00:00.000Z",
       "updatedAt": "2025-05-07T12:38:09.985Z",
@@ -51,7 +51,7 @@
       "description": "ОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\n",
       "status": "in-progress",
       "createdAt": "2025-04-10T12:00:00.000Z",
-      "updatedAt": "2025-05-07T16:12:42.361Z",
+      "updatedAt": "2025-05-07T16:23:04.497Z",
       "priority": "medium",
       "assignedTo": 2,
       "projectId": 1,
@@ -73,14 +73,14 @@
     },
     {
       "id": "10",
-      "title": "Задача233333",
+      "title": "Задача211111",
       "description": "Описание",
-      "status": "todo",
+      "status": "done",
       "priority": "high",
       "assignedTo": "e209",
       "projectId": 1,
       "createdAt": "2025-05-02T17:35:03.603Z",
-      "updatedAt": "2025-05-07T16:12:05.497Z",
+      "updatedAt": "2025-05-07T16:27:40.200Z",
       "deadline": "2025-05-09T11:33",
       "attachments": [],
       "completed": false,
@@ -90,7 +90,7 @@
       "id": "11",
       "title": "Задача 999",
       "description": "Описание",
-      "status": "in-progress",
+      "status": "done",
       "priority": "low",
       "assignedTo": "2eea",
       "projectId": "1ed7",
@@ -98,6 +98,36 @@
       "updatedAt": "2025-05-02T17:49:48.577Z",
       "deadline": "2025-05-03T20:49",
       "position": 2
+    },
+    {
+      "id": "12",
+      "title": "ДИЗАЙН",
+      "description": "ДИЗАЙН",
+      "status": "todo",
+      "priority": "low",
+      "assignedTo": "03dc",
+      "projectId": "4",
+      "deadline": "2025-05-15T16:48",
+      "attachments": [],
+      "createdBy": "03dc",
+      "completed": false,
+      "createdAt": "2025-05-08T13:48:22.290Z",
+      "updatedAt": "2025-05-08T13:58:33.324Z"
+    },
+    {
+      "id": "13",
+      "title": "ДИЗАЙН 222",
+      "description": "22222222222",
+      "status": "todo",
+      "priority": "medium",
+      "assignedTo": "4",
+      "projectId": "0",
+      "deadline": "2025-05-31T16:55",
+      "attachments": [],
+      "createdBy": "03dc",
+      "completed": false,
+      "createdAt": "2025-05-08T13:55:28.954Z",
+      "updatedAt": "2025-05-08T13:59:31.465Z"
     }
   ],
   "projects": [
@@ -116,38 +146,14 @@
       "teamMembers": []
     },
     {
-      "id": "3",
-      "name": "123",
-      "description": "2222",
-      "status": "active",
-      "teamMembers": []
-    },
-    {
       "id": "4",
       "name": "Konstantin",
       "description": "111221",
       "status": "active",
       "teamMembers": []
-    },
-    {
-      "id": "1ed7",
-      "name": "ТЕСТ 4",
-      "description": "вывывывыв",
-      "status": "active",
-      "teamMembers": [],
-      "createdAt": "2025-05-02T17:23:43.501Z",
-      "updatedAt": "2025-05-02T17:23:48.613Z"
     }
   ],
   "comments": [
-    {
-      "id": "7871",
-      "taskId": "2",
-      "userId": "03dc",
-      "createdAt": "2025-05-07T08:05:34.726Z",
-      "updatedAt": "2025-05-07T08:05:34.726Z",
-      "attachments": []
-    },
     {
       "id": "3a44",
       "taskId": "2",
@@ -162,33 +168,6 @@
       "userId": "03dc",
       "createdAt": "2025-05-07T08:13:22.658Z",
       "updatedAt": "2025-05-07T08:13:22.658Z",
-      "attachments": []
-    },
-    {
-      "id": "4fae",
-      "taskId": "1",
-      "text": "55",
-      "userId": "03dc",
-      "createdAt": "2025-05-07T08:28:31.866Z",
-      "updatedAt": "2025-05-07T08:28:31.866Z",
-      "attachments": []
-    },
-    {
-      "id": "a210",
-      "taskId": "1",
-      "text": "11",
-      "userId": "03dc",
-      "createdAt": "2025-05-07T08:30:30.997Z",
-      "updatedAt": "2025-05-07T08:30:30.997Z",
-      "attachments": []
-    },
-    {
-      "id": "b9b0",
-      "taskId": "1",
-      "text": "4444",
-      "userId": "03dc",
-      "createdAt": "2025-05-07T09:20:11.262Z",
-      "updatedAt": "2025-05-07T09:20:11.262Z",
       "attachments": []
     },
     {
@@ -217,6 +196,78 @@
       "createdAt": "2025-05-07T16:12:31.097Z",
       "updatedAt": "2025-05-07T16:12:31.097Z",
       "attachments": []
+    },
+    {
+      "id": "b38f",
+      "taskId": "3",
+      "text": "11111",
+      "userId": "03dc",
+      "createdAt": "2025-05-07T17:49:57.737Z",
+      "updatedAt": "2025-05-07T17:49:57.737Z",
+      "attachments": []
+    },
+    {
+      "id": "160f",
+      "taskId": "9",
+      "text": "1111",
+      "userId": "03dc",
+      "createdAt": "2025-05-07T17:52:18.912Z",
+      "updatedAt": "2025-05-07T17:52:18.912Z",
+      "attachments": []
+    },
+    {
+      "id": "a432",
+      "taskId": "9",
+      "text": "1111",
+      "userId": "03dc",
+      "createdAt": "2025-05-08T08:03:38.691Z",
+      "updatedAt": "2025-05-08T08:03:38.691Z",
+      "attachments": []
+    },
+    {
+      "id": "45f4",
+      "taskId": "4",
+      "text": "111",
+      "userId": "03dc",
+      "createdAt": "2025-05-08T08:27:23.059Z",
+      "updatedAt": "2025-05-08T08:27:23.059Z",
+      "attachments": []
+    },
+    {
+      "id": "0825",
+      "taskId": "9",
+      "text": "9999",
+      "userId": "03dc",
+      "createdAt": "2025-05-08T08:38:33.458Z",
+      "updatedAt": "2025-05-08T08:38:33.458Z",
+      "attachments": []
+    },
+    {
+      "id": "d77f",
+      "taskId": "3",
+      "text": "dd",
+      "userId": "03dc",
+      "createdAt": "2025-05-08T08:48:42.870Z",
+      "updatedAt": "2025-05-08T08:48:42.870Z",
+      "attachments": []
+    },
+    {
+      "id": "130d",
+      "taskId": "10",
+      "text": "111",
+      "userId": "03dc",
+      "createdAt": "2025-05-08T08:55:26.054Z",
+      "updatedAt": "2025-05-08T08:55:26.054Z",
+      "attachments": []
+    },
+    {
+      "id": "b583",
+      "taskId": "2a2a",
+      "text": "111",
+      "userId": "03dc",
+      "createdAt": "2025-05-08T10:25:30.367Z",
+      "updatedAt": "2025-05-08T10:25:30.367Z",
+      "attachments": []
     }
   ],
   "users": [
@@ -225,14 +276,16 @@
       "name": "Иван Петров",
       "email": "ivan@example.com",
       "role": "admin",
-      "password": "$2b$10$m6fU2tZ33wk.uvsZn0y1ouezwwAnSRBu9.AOAlYQUWViTqBNpEa26"
+      "password": "$2b$10$.sBQsSfR8YHU3FK4o9pGs.VxCr86VtBl/a2Qt3uzjXt/2V9PEM9Um",
+      "updatedAt": "2025-05-08T15:21:04.457Z"
     },
     {
       "id": "2",
       "name": "Петр Иванов",
       "email": "petr@example.com",
       "role": "developer",
-      "password": "$2b$10$m6fU2tZ33wk.uvsZn0y1ouezwwAnSRBu9.AOAlYQUWViTqBNpEa26"
+      "password": "$2b$10$PtnCsUP3qSqfAvFuAlj9RepVGI8DbsXhEMA4fW225g60BAQUF7bGa",
+      "updatedAt": "2025-05-08T15:23:43.204Z"
     },
     {
       "id": "3",
