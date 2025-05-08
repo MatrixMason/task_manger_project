@@ -1,28 +1,23 @@
 export type UserRole = 'admin' | 'manager' | 'developer' | 'designer'
 
 export type Permission =
-  // Доска
   | 'board.view'
-  // Проекты
   | 'projects.create'
   | 'projects.edit'
   | 'projects.delete'
   | 'projects.view'
-  // Задачи
   | 'tasks.create'
   | 'tasks.edit'
   | 'tasks.delete'
   | 'tasks.view'
   | 'tasks.assign'
   | 'tasks.changeStatus'
-  // Команда
   | 'team.manage'
   | 'team.view'
   | 'users.create'
   | 'users.edit'
   | 'users.delete'
 
-// Права доступа по ролям
 export const rolePermissions: Record<UserRole, Permission[]> = {
   admin: [
     'board.view',
@@ -45,12 +40,11 @@ export const rolePermissions: Record<UserRole, Permission[]> = {
   designer: [
     'board.view',
     'projects.view',
-    'tasks.view', 'tasks.changeStatus',
+    'tasks.create', 'tasks.view', 'tasks.changeStatus',
     'team.view'
   ]
 }
 
-// Полная модель пользователя с паролем (для БД)
 export interface UserWithPassword {
   id: string
   name: string
@@ -61,7 +55,6 @@ export interface UserWithPassword {
   updatedAt: string
 }
 
-// Модель пользователя без пароля (для клиента)
 export type User = Omit<UserWithPassword, 'password'>
 
 export interface AuthResponse {

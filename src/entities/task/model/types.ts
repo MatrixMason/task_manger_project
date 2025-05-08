@@ -2,14 +2,14 @@ export type TaskStatus = 'todo' | 'in-progress' | 'done'
 export type TaskPriority = 'low' | 'medium' | 'high'
 
 export interface User {
-  id: string
+  id: string | number
   name: string
   email: string
   role: string
 }
 
 export interface TaskAttachment {
-  id: string
+  id: string | number
   name: string
   type: string
   size: number
@@ -17,7 +17,7 @@ export interface TaskAttachment {
 }
 
 export interface Task {
-  id: number
+  id: string | number
   title: string
   description?: string
   status: TaskStatus
@@ -31,6 +31,7 @@ export interface Task {
   attachments?: TaskAttachment[]
   position: number
   completed: boolean
+  createdBy: string
 }
 
 export interface CreateTaskData {
@@ -39,9 +40,10 @@ export interface CreateTaskData {
   status: TaskStatus
   priority: TaskPriority
   assignedTo?: string | null
-  projectId?: number
+  projectId?: string | number
   deadline?: string | null
   attachments?: File[]
+  createdBy: string
 }
 
 export type TaskFilters = Partial<{
