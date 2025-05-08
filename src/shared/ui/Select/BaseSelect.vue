@@ -82,7 +82,7 @@ function handleChange(event: Event) {
   &__label {
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--text-color);
+    color: var(--text-primary);
   }
 
   &__input {
@@ -92,12 +92,16 @@ function handleChange(event: Event) {
     font-size: 0.875rem;
     line-height: 1.25rem;
     font-family: inherit;
-    color: var(--text-color);
-    background-color: #f8fafc;
+    color: var(--text-primary);
+    background-color: transparent;
     transition: all 0.2s ease;
+
+    &:hover {
+      color: var(--color-primary);
+    }
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23718096' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 8px center;
     background-size: 16px;

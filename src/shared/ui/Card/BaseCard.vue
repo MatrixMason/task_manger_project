@@ -18,18 +18,25 @@ defineProps<{
 @use '@/app/styles/variables' as *;
 
 .card {
-  background: var(--bg-secondary);
+  background: var(--bg-primary);
   border-radius: var(--radius-md);
   padding: $spacing-md;
   border: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
   transition: all var(--transition-normal);
+  
+  .dark & {
+    background: rgb(30, 33, 43);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
 
   &--hover {
     &:hover {
       transform: translateY(-2px);
       border-color: var(--color-primary);
-      box-shadow: var(--shadow-md);
+      
+      .dark & {
+        border-color: var(--color-primary);
+      }
     }
   }
 }
