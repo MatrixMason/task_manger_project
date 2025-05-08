@@ -130,6 +130,7 @@ onMounted(async () => {
 }
 
 .comments-list__title {
+  color: var(--text-primary);
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -151,7 +152,7 @@ onMounted(async () => {
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid var(--color-border);
+  border: 2px solid var(--border-color);
   border-top-color: var(--color-primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
@@ -169,9 +170,7 @@ onMounted(async () => {
 }
 
 .comment {
-  background: var(--color-background);
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
+  padding: 1rem;
   margin-bottom: 1rem;
 }
 
@@ -180,12 +179,13 @@ onMounted(async () => {
   justify-content: space-between;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
-  color: var(--color-text-light);
+  color: var(--text-secondary);
 }
 
 .comment__content {
   margin-bottom: 1rem;
   white-space: pre-wrap;
+  color: var(--text-primary);
 }
 
 .comment__edit-input {
@@ -193,9 +193,19 @@ onMounted(async () => {
   min-height: 100px;
   padding: 0.5rem;
   margin-bottom: 0.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   resize: vertical;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+
+  &:hover,
+  &:focus {
+    background-color: var(--color-primary);
+    color: var(--text-on-primary);
+    border-color: var(--color-primary);
+  }
 }
 
 .comment__edit-actions {
@@ -206,9 +216,11 @@ onMounted(async () => {
 .comment__edit-save,
 .comment__edit-cancel {
   padding: 0.5rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   cursor: pointer;
+  color: var(--text-primary);
+  background: var(--bg-primary);
 }
 
 .comment__edit-save {
@@ -227,6 +239,10 @@ onMounted(async () => {
 .comment__attachment-link {
   color: var(--color-primary);
   text-decoration: none;
+  
+  &:hover {
+    color: var(--color-primary-hover);
+  }
 }
 
 .comment__attachment-link:hover {
@@ -240,14 +256,25 @@ onMounted(async () => {
 
 .comment__action {
   padding: 0.25rem 0.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border: none;
+  border-radius: var(--radius-sm);
   background: none;
   cursor: pointer;
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: var(--bg-secondary);
+  }
 }
 
 .comment__action--delete {
   color: var(--color-error);
   border-color: var(--color-error);
+  
+  &:hover {
+    background: var(--color-error);
+    color: var(--text-on-primary);
+  }
 }
 </style>

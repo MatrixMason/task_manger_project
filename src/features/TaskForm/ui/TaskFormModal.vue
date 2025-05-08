@@ -245,7 +245,7 @@ async function handleSubmit(formData: Partial<Task>) {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
-  color: #495057;
+  color: var(--text-secondary);
 }
 
 .attachments-area {
@@ -307,16 +307,16 @@ async function handleSubmit(formData: Partial<Task>) {
   display: inline-flex;
   align-items: center;
   padding: 8px 16px;
-  background-color: #e9ecef;
-  border: 1px dashed #adb5bd;
+  background-color: var(--bg-secondary);
+  border: 1px dashed var(--border-color);
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .file-input:hover {
-  background-color: #dee2e6;
-  border-color: #6c757d;
+  background-color: var(--bg-tertiary);
+  border-color: var(--color-primary);
 }
 
 .file-input input[type="file"] {
@@ -329,13 +329,13 @@ async function handleSubmit(formData: Partial<Task>) {
 
 .file-input__text {
   font-size: 0.875rem;
-  color: #495057;
+  color: var(--text-secondary);
 }
 
 .comments-section {
   margin-top: 32px;
   padding-top: 24px;
-  border-top: 1px solid #dee2e6;
+  border-top: 1px solid var(--border-color);
 }
 
 .comments-section__title {
@@ -353,7 +353,7 @@ async function handleSubmit(formData: Partial<Task>) {
   display: block;
   margin-bottom: 8px;
   font-weight: 500;
-  color: #495057;
+  color: var(--text-secondary);
 }
 
 .task-modal :deep(.form-field__input),
@@ -361,7 +361,9 @@ async function handleSubmit(formData: Partial<Task>) {
 .task-modal :deep(.form-field__textarea) {
   width: 100%;
   padding: 10px 12px;
-  border: 1px solid #ced4da;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary);
+  color: var(--text-primary);
   border-radius: 6px;
   font-size: 0.875rem;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -371,8 +373,8 @@ async function handleSubmit(formData: Partial<Task>) {
 .task-modal :deep(.form-field__select:focus),
 .task-modal :deep(.form-field__textarea:focus) {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-hover);
 }
 
 .task-modal :deep(.form-field__textarea) {
@@ -408,12 +410,12 @@ async function handleSubmit(formData: Partial<Task>) {
 }
 
 .task-modal :deep(.form-actions button[type="button"]) {
-  background-color: #e9ecef;
-  color: #495057;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
 }
 
 .task-modal :deep(.form-actions button[type="button"]:hover) {
-  background-color: #dee2e6;
+  background-color: var(--bg-tertiary);
 }
 
 .task-modal :deep(.form-actions button:disabled) {

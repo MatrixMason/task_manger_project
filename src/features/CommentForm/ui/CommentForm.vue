@@ -68,32 +68,43 @@ textarea {
   width: 100%;
   min-height: 80px;
   padding: 12px;
-  border: 1px solid #dee2e6;
-  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   resize: vertical;
   font-family: inherit;
   font-size: 0.875rem;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  transition: all 0.2s ease;
+
+  &:hover,
+  &:focus {
+    background-color: var(--color-primary);
+    color: var(--text-on-primary);
+    border-color: var(--color-primary);
+    outline: none;
+  }
 }
 
 textarea:focus {
   outline: none;
-  border-color: #86b7fe;
-  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.25rem var(--color-primary-hover);
 }
 
 .error-message {
   margin-bottom: 16px;
   padding: 12px;
-  background-color: #fff3f3;
-  border: 1px solid #ffcdd2;
+  background-color: var(--color-error);
+  border: 1px solid var(--color-error-hover);
   border-radius: 4px;
-  color: #d32f2f;
+  color: var(--text-on-primary);
   font-size: 0.875rem;
 }
 
 button[type="submit"] {
   padding: 8px 16px;
-  background-color: #0d6efd;
+  background-color: var(--color-primary);
   border: none;
   border-radius: 4px;
   color: white;
@@ -103,12 +114,12 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover:not(:disabled) {
-  background-color: #0b5ed7;
+  background-color: var(--color-primary-hover);
 }
 
 button[type="submit"]:disabled {
-  background-color: #e9ecef;
-  color: #6c757d;
+  background-color: var(--bg-secondary);
+  color: var(--text-secondary);
   cursor: not-allowed;
 }
 

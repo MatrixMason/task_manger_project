@@ -98,12 +98,12 @@ watch(
   position: absolute;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--bg-overlay);
 }
 
 .modal {
   position: relative;
-  background: white;
+  background: var(--bg-primary);
   border-radius: v.$border-radius-lg;
   box-shadow: v.$shadow-lg;
   max-height: 90vh;
@@ -135,6 +135,7 @@ watch(
   }
 
   &__title {
+    color: var(--text-primary);
     margin: 0;
     font-size: 1.25rem;
     font-weight: 600;
