@@ -144,6 +144,40 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
+  async function checkEmailExists(email: string): Promise<boolean> {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      const exists = await usersApi.checkEmailExists(email)
+      if (!exists) {
+        error.value = 'Пользователь с таким email не найден'
+      }
+      return exists
+    } catch (err: unknown) {
+      error.value = 'Ошибка при проверке email'
+      console.error('Email check failed:', err)
+      throw error.value
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  async function updatePassword(email: string, newPassword: string): Promise<void> {
+    isLoading.value = true
+    error.value = null
+
+    try {
+      await usersApi.updatePassword(email, newPassword)
+    } catch (err: unknown) {
+      error.value = 'Не удалось обновить пароль'
+      console.error('Password update failed:', err)
+      throw error.value
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     users,
     currentUser,
@@ -152,13 +186,15 @@ export const useUsersStore = defineStore('users', () => {
     error,
     isAuthenticated,
     fetchUsers,
+    getUserById,
+    register,
+    login,
+    getCurrentUser,
+    logout,
     createUser,
     updateUser,
     deleteUser,
-    getUserById,
-    login,
-    logout,
-    register,
-    getCurrentUser
+    checkEmailExists,
+    updatePassword
   }
 })

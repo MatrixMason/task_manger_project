@@ -114,18 +114,40 @@ export const usersApi = {
     await apiInstance.delete(`/users/${id}`)
   },
 
+  async checkEmailExists(email: string): Promise<boolean> {
+    const { data: users } = await apiInstance.get<User[]>('/users')
+    return users.some((u) => u.email === email)
+  },
+
+  async updatePassword(email: string, newPassword: string): Promise<void> {
+    const { data: users } = await apiInstance.get<UserWithPassword[]>('/users')
+    const user = users.find((u) => u.email === email)
+    if (!user) {
+      throw new Error('Пользователь не найден')
+    }
+
+    const hashedPassword = await passwordUtils.hash(newPassword)
+    await apiInstance.patch(`/users/${user.id}`, {
+      password: hashedPassword,
+      updatedAt: new Date().toISOString()
+    })
+  },
+
   async login({ email, password }: LoginCredentials): Promise<AuthResponse> {
     const { data: users } = await apiInstance.get<UserWithPassword[]>('/users')
     const user = users.find((u) => u.email === email)
-
     if (!user) {
-      throw new Error('Неверный email или пароль')
+      throw new Error('Пользователь не найден')
     }
 
-    const isValidPassword = await passwordUtils.compare(password, user.password)
-    if (!isValidPassword) {
-      throw new Error('Неверный email или пароль')
+    const isPasswordValid = await passwordUtils.compare(password, user.password)
+    if (!isPasswordValid) {
+      throw new Error('Неверный пароль')
     }
+
+    // Удаляем пароль из ответа
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _pwd, ...userWithoutPassword } = user
 
     // Создаем JWT-подобный токен
     const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }))
@@ -135,15 +157,11 @@ export const usersApi = {
       exp: Date.now() + 24 * 60 * 60 * 1000 // 24 часа
     }))
     const signature = btoa('signature') // В реальном приложении здесь была бы настоящая подпись
-    const token = `${header}.${payload}.${signature}`
-
-    // Удаляем пароль из ответа
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password: _pwd, ...userWithoutPassword } = user
+    const accessToken = `${header}.${payload}.${signature}`
 
     return {
       user: userWithoutPassword,
-      accessToken: token
+      accessToken
     }
   },
 }

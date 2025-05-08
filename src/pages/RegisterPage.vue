@@ -14,7 +14,7 @@ const formData = ref({
   name: '',
   email: '',
   password: '',
-  role: 'developer' as UserRole
+  role: 'developer' as UserRole,
 })
 
 const error = ref<string | null>(null)
@@ -38,7 +38,7 @@ async function handleSubmit() {
   <div class="register-page">
     <form class="register-form" @submit.prevent="handleSubmit">
       <h1>Регистрация</h1>
-      
+
       <div class="form-group">
         <BaseInput
           v-model="formData.name"
@@ -76,7 +76,7 @@ async function handleSubmit() {
           :options="[
             { value: 'developer' as const, label: 'Разработчик' },
             { value: 'manager' as const, label: 'Менеджер' },
-            { value: 'designer' as const, label: 'Дизайнер' }
+            { value: 'designer' as const, label: 'Дизайнер' },
           ]"
         />
       </div>
@@ -89,9 +89,7 @@ async function handleSubmit() {
         {{ usersStore.isLoading ? 'Регистрация...' : 'Зарегистрироваться' }}
       </BaseButton>
 
-      <div class="form-footer">
-        Уже есть аккаунт? <router-link to="/login">Войти</router-link>
-      </div>
+      <div class="form-footer">Уже есть аккаунт? <router-link to="/login">Войти</router-link></div>
     </form>
   </div>
 </template>
@@ -103,15 +101,27 @@ async function handleSubmit() {
   align-items: center;
   min-height: 100vh;
   background-color: var(--color-background);
+  padding: 0 1rem;
+
+  form {
+    width: 100%;
+  }
 }
 
 .register-form {
-  width: 100%;
-  max-width: 400px;
+  max-width: 600px;
+  margin: 2rem auto;
   padding: 2rem;
-  background-color: var(--color-background-soft);
+  background-color: var(--color-background-form);
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+
+  [data-theme='dark'] & {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.5),
+      0 2px 4px -1px rgba(255, 255, 255, 0.06);
+  }
 
   h1 {
     margin-bottom: 2rem;
@@ -121,7 +131,8 @@ async function handleSubmit() {
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  width: 100%;
 }
 
 .form-control {

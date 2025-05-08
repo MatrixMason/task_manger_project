@@ -56,7 +56,12 @@ async function handleSubmit() {
       </BaseButton>
 
       <div class="form-footer">
-        Нет аккаунта? <router-link to="/register">Зарегистрироваться</router-link>
+        <router-link to="/password-recovery" class="forgot-password-link"
+          >Забыли пароль?</router-link
+        >
+        <div class="register-link">
+          Нет аккаунта? <router-link to="/register">Зарегистрироваться</router-link>
+        </div>
       </div>
     </form>
   </div>
@@ -69,15 +74,27 @@ async function handleSubmit() {
   align-items: center;
   min-height: 100vh;
   background-color: var(--color-background);
+  padding: 0 1rem;
+
+  form {
+    width: 100%;
+  }
 }
 
 .login-form {
-  width: 100%;
-  max-width: 400px;
+  max-width: 600px;
+  margin: 2rem auto;
   padding: 2rem;
-  background-color: var(--color-background-soft);
   border-radius: 8px;
+  background-color: var(--color-background-form);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  [data-theme='dark'] & {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.5),
+      0 2px 4px -1px rgba(255, 255, 255, 0.06);
+  }
 
   h1 {
     margin-bottom: 2rem;
@@ -87,7 +104,8 @@ async function handleSubmit() {
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
+  width: 100%;
 }
 
 .error-message {
@@ -104,6 +122,11 @@ async function handleSubmit() {
   margin-top: 1rem;
   text-align: center;
   font-size: 0.875rem;
+  color: var(--text-secondary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 
   a {
     color: var(--color-primary);
@@ -112,6 +135,14 @@ async function handleSubmit() {
     &:hover {
       text-decoration: underline;
     }
+  }
+
+  .forgot-password-link {
+    color: var(--text-secondary);
+  }
+
+  .register-link {
+    margin-top: 0.5rem;
   }
 }
 </style>

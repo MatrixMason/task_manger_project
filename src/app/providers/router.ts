@@ -7,6 +7,8 @@ import BoardPage from '@/pages/BoardPage/ui/BoardPage.vue'
 import TeamPage from '@/pages/TeamPage/ui/TeamPage.vue'
 import LoginPage from '@/pages/LoginPage.vue'
 import ProjectsPage from '@/pages/ProjectsPage.vue'
+import PasswordRecoveryPage from '@/pages/PasswordRecovery/ui/PasswordRecoveryPage.vue'
+import RegisterPage from '@/pages/RegisterPage.vue'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -32,6 +34,16 @@ const routes: RouteRecordRaw[] = [
     path: '/login',
     name: 'login',
     component: LoginPage
+  },
+  {
+    path: '/password-recovery',
+    name: 'password-recovery',
+    component: PasswordRecoveryPage
+  },
+  {
+    path: '/register',
+    name: 'register',
+    component: RegisterPage
   },
   {
     path: '/projects',
