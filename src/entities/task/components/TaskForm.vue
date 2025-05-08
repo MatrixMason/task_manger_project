@@ -14,7 +14,8 @@ defineOptions({
 })
 
 const props = defineProps<{
-  initialData?: Partial<Task>
+  task?: Partial<Task>
+  readonly?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -22,19 +23,26 @@ const emit = defineEmits<{
   (e: 'cancel'): void
 }>()
 
-type FormData = Omit<Task, 'id' | 'createdAt' | 'updatedAt' | 'assignee' | 'attachments' | 'position' | 'completed'> & {
-  id?: number
+type FormData = {
+  id?: string
+  title: string
+  description: string
+  status: TaskStatus
+  priority: TaskPriority
+  assignedTo: string | null
+  projectId: string
+  deadline: string | null
 }
 
 const formData = ref<FormData>({
-  id: props.initialData?.id,
-  title: props.initialData?.title || '',
-  description: props.initialData?.description || '',
-  status: props.initialData?.status || 'todo',
-  priority: props.initialData?.priority || 'medium',
-  assignedTo: props.initialData?.assignedTo || null,
-  projectId: props.initialData?.projectId || 0,
-  deadline: props.initialData?.deadline || null,
+  id: props.task?.id,
+  title: props.task?.title || '',
+  description: props.task?.description || '',
+  status: props.task?.status || 'todo',
+  priority: props.task?.priority || 'medium',
+  assignedTo: props.task?.assignedTo || null,
+  projectId: props.task?.projectId || '0',
+  deadline: props.task?.deadline || null,
 })
 
 const statusOptions = [
@@ -54,10 +62,7 @@ const projectsStore = useProjectsStore()
 const { users } = storeToRefs(usersStore)
 
 onMounted(async () => {
-  await Promise.all([
-    usersStore.fetchUsers(),
-    projectsStore.fetchProjects()
-  ])
+  await Promise.all([usersStore.fetchUsers(), projectsStore.fetchProjects()])
 })
 
 function handleSubmit() {
@@ -72,6 +77,7 @@ function handleSubmit() {
         v-model="formData.title"
         label="Название"
         required
+        :readonly="props.readonly"
         placeholder="Введите название задачи"
       />
     </div>
@@ -81,6 +87,7 @@ function handleSubmit() {
         v-model="formData.description"
         label="Описание"
         required
+        :readonly="props.readonly"
         placeholder="Введите описание задачи"
       />
     </div>
@@ -91,6 +98,7 @@ function handleSubmit() {
           v-model="formData.status"
           label="Статус"
           :options="statusOptions"
+          :disabled="props.readonly"
           option-label="label"
           option-value="value"
         />
@@ -101,6 +109,7 @@ function handleSubmit() {
           v-model="formData.priority"
           label="Приоритет"
           :options="priorityOptions"
+          :disabled="props.readonly"
           option-label="label"
           option-value="value"
         />
@@ -111,13 +120,22 @@ function handleSubmit() {
       <BaseSelect
         v-model="formData.projectId"
         label="Проект"
-        :options="[{ value: null, label: 'Без проекта' }, ...projectsStore.projects.map(p => ({ value: p.id, label: p.name }))]"
+        :disabled="props.readonly"
+        :options="[
+          { value: 0, label: 'Без проекта' },
+          ...projectsStore.projects.map((p) => ({ value: p.id, label: p.name })),
+        ]"
       />
     </div>
 
     <div class="form-row">
       <div class="form-group">
-        <BaseInput v-model="formData.deadline" type="datetime-local" label="Дедлайн" />
+        <BaseInput
+          v-model="formData.deadline"
+          type="datetime-local"
+          label="Дедлайн"
+          :readonly="props.readonly"
+        />
       </div>
 
       <div class="form-group">
@@ -125,6 +143,7 @@ function handleSubmit() {
           v-model="formData.assignedTo"
           label="Исполнитель"
           :options="users"
+          :disabled="props.readonly"
           option-label="name"
           option-value="id"
           placeholder="Выберите исполнителя"
@@ -135,10 +154,10 @@ function handleSubmit() {
 
     <div class="form-actions">
       <BaseButton type="button" variant="secondary" size="md" @click="$emit('cancel')">
-        Отмена
+        {{ props.readonly ? 'Закрыть' : 'Отмена' }}
       </BaseButton>
-      <BaseButton type="submit" variant="primary" size="md">
-        {{ props.initialData ? 'Сохранить' : 'Создать' }}
+      <BaseButton v-if="!props.readonly" type="submit" variant="primary" size="md">
+        {{ props.task ? 'Сохранить' : 'Создать' }}
       </BaseButton>
     </div>
   </form>
@@ -190,10 +209,6 @@ function handleSubmit() {
     justify-content: flex-end;
     gap: v.$spacing-md;
     margin-top: v.$spacing-lg;
-
-    .material-icons {
-      font-size: 1.25rem;
-    }
   }
 }
 </style>

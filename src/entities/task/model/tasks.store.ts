@@ -22,7 +22,6 @@ export const useTasksStore = defineStore('tasks', () => {
   const filteredTasks = computed(() => {
     let filtered = tasks.value
 
-    // Filter by search
     if (filters.value.search) {
       const searchQuery = filters.value.search.toLowerCase()
       filtered = filtered.filter((task: Task) =>
@@ -31,27 +30,22 @@ export const useTasksStore = defineStore('tasks', () => {
       )
     }
 
-    // Filter by status
     if (filters.value.status) {
       filtered = filtered.filter((task: Task) => task.status === filters.value.status)
     }
 
-    // Filter by priority
     if (filters.value.priority) {
       filtered = filtered.filter((task: Task) => task.priority === filters.value.priority)
     }
 
-    // Filter by assignee
     if (filters.value.assignedTo) {
       filtered = filtered.filter((task: Task) => task.assignedTo === filters.value.assignedTo)
     }
 
-    // Filter by project
     if (filters.value.projectId) {
       filtered = filtered.filter((task: Task) => task.projectId === filters.value.projectId)
     }
 
-    // Sort
     if (filters.value.sort) {
       const sortOrder = filters.value.order === 'desc' ? -1 : 1
       filtered = [...filtered].sort((a: Task, b: Task) => {
@@ -93,9 +87,8 @@ export const useTasksStore = defineStore('tasks', () => {
     return tasks.value.find(task => task.id === selectedTaskId.value)
   })
 
-  async function moveTask(taskId: string | number, newStatus: TaskStatus, position: number) {
-    const taskIdNum = typeof taskId === 'string' ? parseInt(taskId, 10) : taskId
-    const task = tasks.value.find(t => t.id === taskIdNum)
+  async function moveTask(taskId: string, newStatus: TaskStatus, position: number) {
+    const task = tasks.value.find(t => t.id === taskId)
     if (!task) return
 
     const prevStatus = task.status
@@ -107,17 +100,17 @@ export const useTasksStore = defineStore('tasks', () => {
 
     // Update positions of other tasks
     const tasksToUpdate = tasks.value
-      .filter(t => t.id !== taskIdNum && t.status === newStatus)
+      .filter(t => t.id !== taskId && t.status === newStatus)
       .sort((a, b) => a.position - b.position)
 
     const updates = tasksToUpdate.map((task, index) => ({
-      taskId: task.id,
+      taskId: String(task.id),
       status: task.status,
       position: index + 1
     }))
 
     updates.push({
-      taskId: taskIdNum,
+      taskId: taskId,
       status: newStatus,
       position
     })
@@ -172,13 +165,14 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function createTask(data: CreateTaskData) {
+  async function createTask(data: CreateTaskData): Promise<Task> {
     loading.value = true
     error.value = null
 
     try {
       const newTask = await tasksApi.createTask(data)
       tasks.value.push(newTask)
+      return newTask
     } catch (e) {
       error.value = e as Error
       throw error.value
@@ -187,7 +181,7 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function updateTask(taskId: number | string, data: Partial<Task>, showLoading = true): Promise<Task> {
+  async function updateTask(taskId: string, data: Partial<Task>, showLoading = true): Promise<Task> {
     if (showLoading) {
       loading.value = true
     }
@@ -195,8 +189,10 @@ export const useTasksStore = defineStore('tasks', () => {
 
     try {
       const taskIndex = tasks.value.findIndex(t => t.id === taskId)
+      
       if (taskIndex === -1) {
-        throw new Error('Task not found')
+        console.error('Task not found in store:', { taskId, availableTasks: tasks.value })
+        throw new Error(`Task not found: ${taskId}`)
       }
 
       // Оптимистичное обновление
@@ -205,7 +201,7 @@ export const useTasksStore = defineStore('tasks', () => {
       tasks.value[taskIndex] = optimisticUpdate
 
       // Реальное обновление на сервере
-      const updatedTask = await tasksApi.updateTask(Number(taskId), data)
+      const updatedTask = await tasksApi.updateTask(taskId, data)
       
       // Обновляем если есть различия с сервером
       if (JSON.stringify(updatedTask) !== JSON.stringify(optimisticUpdate)) {
@@ -223,7 +219,7 @@ export const useTasksStore = defineStore('tasks', () => {
     }
   }
 
-  async function deleteTask(taskId: number) {
+  async function deleteTask(taskId: string) {
     loading.value = true
     error.value = null
 

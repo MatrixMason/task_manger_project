@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
+import { storeToRefs } from 'pinia'
+import { usePermissions } from '@/features/Auth/lib/usePermissions'
 import TaskForm from '@/entities/task/components/TaskForm.vue'
 import BaseModal from '@/shared/ui/Modal/BaseModal.vue'
 import CommentsList from '@/entities/comment/ui/CommentsList.vue'
 import CommentForm from '@/features/CommentForm/ui/CommentForm.vue'
 import { useTasksStore } from '@/entities/task/model/tasks.store'
+import { useUsersStore } from '@/entities/user/model/users.store'
 import type { Task, CreateTaskData, TaskAttachment } from '@/entities/task/model/types'
 
 defineOptions({
@@ -22,11 +25,37 @@ const emit = defineEmits<{
 }>()
 
 const tasksStore = useTasksStore()
+const usersStore = useUsersStore()
+const { currentUser } = storeToRefs(usersStore)
+const { hasPermission } = usePermissions()
+
+const isCreatingNewTask = computed(() => !props.task)
+
+const isTaskAuthor = computed(() => {
+  if (isCreatingNewTask.value) return false
+  return props.task?.createdBy === currentUser.value?.id
+})
+
+const canEdit = computed(() => {
+  if (isCreatingNewTask.value) {
+    return hasPermission('tasks.create')
+  }
+
+  if (isTaskAuthor.value) {
+    return true
+  }
+
+  return hasPermission('tasks.edit')
+})
+
+const isReadOnly = computed(() => !canEdit.value)
 const loading = ref(false)
 const error = ref<string | null>(null)
 const selectedFiles = ref<File[]>([])
 
 function handleClose() {
+  selectedFiles.value = []
+  error.value = null
   emit('update:show', false)
 }
 
@@ -34,7 +63,10 @@ function handleFileSelect(event: Event) {
   const input = event.target as HTMLInputElement
   if (input.files) {
     const newFiles = Array.from(input.files)
-    const totalSize = [...selectedFiles.value, ...newFiles].reduce((sum, file) => sum + file.size, 0)
+    const totalSize = [...selectedFiles.value, ...newFiles].reduce(
+      (sum, file) => sum + file.size,
+      0,
+    )
 
     if (totalSize > 10 * 1024 * 1024) {
       error.value = 'Total file size cannot exceed 10MB'
@@ -66,76 +98,75 @@ async function handleSubmit(formData: Partial<Task>) {
 
     const taskData: Partial<Task> = {
       ...formData,
-      updatedAt: now
+      updatedAt: now,
+      createdBy: currentUser.value?.id || '',
     }
 
-    // Handle attachments
     if (selectedFiles.value.length > 0) {
-      const newAttachments = await Promise.all(selectedFiles.value.map(async (file) => {
-        const reader = new FileReader()
-        const base64 = await new Promise<string>((resolve) => {
-          reader.onload = () => resolve(reader.result as string)
-          reader.readAsDataURL(file)
-        })
+      const newAttachments = await Promise.all(
+        selectedFiles.value.map(async (file) => {
+          const reader = new FileReader()
+          const base64 = await new Promise<string>((resolve) => {
+            reader.onload = () => resolve(reader.result as string)
+            reader.readAsDataURL(file)
+          })
 
-        return {
-          id: crypto.randomUUID(),
-          name: file.name,
-          type: file.type,
-          size: file.size,
-          content: base64
-        } as TaskAttachment
-      }))
+          return {
+            id: crypto.randomUUID(),
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            content: base64,
+          } as TaskAttachment
+        }),
+      )
 
-      // Combine existing attachments with new ones
-      taskData.attachments = [
-        ...(props.task?.attachments || []),
-        ...newAttachments
-      ]
+      taskData.attachments = [...(props.task?.attachments || []), ...newAttachments]
     } else if (props.task?.attachments) {
-      // Keep existing attachments if no new files
       taskData.attachments = props.task.attachments
     }
 
     let savedTask: Task
+    if (props.task?.id) {
+      await tasksStore.fetchTasks()
 
-    try {
-      if (props.task) {
-        // Update existing task
-        const updatedTask = await tasksStore.updateTask(props.task.id, {
-          ...taskData,
-          id: props.task.id, // Ensure ID is included
-          status: props.task.status // Keep the current status
-        })
-        savedTask = updatedTask
-      } else {
-        // Create new task
-        const newTask = await tasksStore.createTask({
-          ...taskData,
-          completed: false,
-          createdAt: now,
-          status: 'todo' // Default status for new tasks
-        } as CreateTaskData)
-        savedTask = newTask
+      const taskId = props.task.id
+      if (!taskId) {
+        throw new Error('Task ID is required for update')
       }
 
-      // Refresh task list
-      await tasksStore.fetchTasks()
-      
-      // Emit the save event with the saved task
-      emit('save', savedTask)
-      
-      // Close modal and return the saved task
-      handleClose()
-      return savedTask
-    } catch (error) {
-      console.error('Failed to save task:', error)
-      throw error
+      const updateData: Partial<Task> = {
+        ...taskData,
+        id: taskId
+      }
+
+      const updateResult = await tasksStore.updateTask(taskId, updateData)
+      if (!updateResult || !updateResult.id) {
+        throw new Error('Failed to update task: Invalid response from server')
+      }
+      savedTask = updateResult
+    } else {
+      const createData: CreateTaskData = {
+        title: taskData.title || '',
+        description: taskData.description,
+        status: 'todo',
+        priority: taskData.priority || 'medium',
+        assignedTo: taskData.assignedTo || null,
+        projectId: taskData.projectId,
+        deadline: taskData.deadline || null,
+        attachments: selectedFiles.value,
+        createdBy: taskData.createdBy || '',
+      }
+
+      const createResult = await tasksStore.createTask(createData)
+      if (!createResult) {
+        throw new Error('Failed to create task: No response from server')
+      }
+      savedTask = createResult
     }
 
-
-
-    // Close modal after successful save
+    await tasksStore.fetchTasks()
+    emit('save', savedTask)
     handleClose()
   } catch (e) {
     const errorMessage = e instanceof Error ? e.message : 'Failed to save task'
@@ -150,16 +181,17 @@ async function handleSubmit(formData: Partial<Task>) {
 <template>
   <BaseModal
     :show="show"
-    :title="props.task ? 'Edit Task' : 'Create Task'"
+    :title="props.task ? 'Редактирование задачи' : 'Создание задачи'"
     @update:show="handleClose"
     class="task-modal"
   >
     <template #default>
       <div class="task-modal__content">
         <TaskForm
-          :initial-data="props.task"
-          :loading="loading"
+          :task="props.task"
+          :readonly="isReadOnly"
           @submit="handleSubmit"
+          @cancel="handleClose"
         />
 
         <div v-if="error" class="task-modal__error">
@@ -175,7 +207,7 @@ async function handleSubmit(formData: Partial<Task>) {
                 <span class="selected-file__icon">📎</span>
                 <span class="selected-file__name" :title="file.name">{{ file.name }}</span>
                 <span class="selected-file__size">{{ formatFileSize(file.size) }}</span>
-                <button 
+                <button
                   type="button"
                   class="selected-file__remove"
                   @click="removeFile(index)"
@@ -192,15 +224,15 @@ async function handleSubmit(formData: Partial<Task>) {
                 multiple
                 accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.txt"
                 @change="handleFileSelect"
-              >
+              />
               <span class="file-input__icon">📎</span>
-              <span class="file-input__text">Attach files</span>
+              <span class="file-input__text">Прикрепить файлы</span>
             </label>
           </div>
         </div>
 
         <div v-if="props.task" class="comments-section">
-          <h3 class="comments-section__title">Comments</h3>
+          <h3 class="comments-section__title">Комментарии</h3>
           <CommentForm :task-id="String(props.task.id)" />
           <CommentsList :task-id="String(props.task.id)" />
         </div>
@@ -219,6 +251,15 @@ async function handleSubmit(formData: Partial<Task>) {
 
 .task-modal__content {
   padding: 24px;
+}
+
+.task-modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border-color);
 }
 
 .task-modal__error {
@@ -319,7 +360,7 @@ async function handleSubmit(formData: Partial<Task>) {
   border-color: var(--color-primary);
 }
 
-.file-input input[type="file"] {
+.file-input input[type='file'] {
   display: none;
 }
 
@@ -366,7 +407,9 @@ async function handleSubmit(formData: Partial<Task>) {
   color: var(--text-primary);
   border-radius: 6px;
   font-size: 0.875rem;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
 }
 
 .task-modal :deep(.form-field__input:focus),
@@ -375,6 +418,7 @@ async function handleSubmit(formData: Partial<Task>) {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px var(--color-primary-hover);
+  background-color: var(--color-background);
 }
 
 .task-modal :deep(.form-field__textarea) {
@@ -400,21 +444,21 @@ async function handleSubmit(formData: Partial<Task>) {
   transition: all 0.2s;
 }
 
-.task-modal :deep(.form-actions button[type="submit"]) {
+.task-modal :deep(.form-actions button[type='submit']) {
   background-color: #007bff;
   color: white;
 }
 
-.task-modal :deep(.form-actions button[type="submit"]:hover) {
+.task-modal :deep(.form-actions button[type='submit']:hover) {
   background-color: #0056b3;
 }
 
-.task-modal :deep(.form-actions button[type="button"]) {
+.task-modal :deep(.form-actions button[type='button']) {
   background-color: var(--bg-secondary);
   color: var(--text-secondary);
 }
 
-.task-modal :deep(.form-actions button[type="button"]:hover) {
+.task-modal :deep(.form-actions button[type='button']:hover) {
   background-color: var(--bg-tertiary);
 }
 
