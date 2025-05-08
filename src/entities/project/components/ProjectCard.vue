@@ -54,6 +54,10 @@ const statusColor = computed(() => {
 
   &:hover {
     transform: translateY(-2px);
+
+    .project-card__title {
+      color: var(--color-primary);
+    }
   }
 
   &__header {
@@ -72,7 +76,7 @@ const statusColor = computed(() => {
   &__status {
     padding: $spacing-xs $spacing-sm;
     border-radius: $border-radius-sm;
-    color: white;
+    color: var(--text-on-primary);
     font-size: 0.875rem;
     text-transform: capitalize;
   }
