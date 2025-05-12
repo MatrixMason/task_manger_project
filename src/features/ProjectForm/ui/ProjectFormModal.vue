@@ -21,7 +21,7 @@ interface Emits {
 
 const props = withDefaults(defineProps<Props>(), {
   show: false,
-  submitLabel: 'Сохранить'
+  submitLabel: 'Сохранить',
 })
 
 const emit = defineEmits<Emits>()
@@ -30,7 +30,7 @@ const { hasPermission } = usePermissions()
 
 const formData = ref<CreateProjectData>({
   name: '',
-  description: ''
+  description: '',
 })
 
 const error = ref('')
@@ -42,14 +42,18 @@ onMounted(async () => {
   }
 })
 
-watch(() => props.project, (newProject) => {
-  if (newProject) {
-    formData.value = {
-      name: newProject.name,
-      description: newProject.description
+watch(
+  () => props.project,
+  (newProject) => {
+    if (newProject) {
+      formData.value = {
+        name: newProject.name,
+        description: newProject.description,
+      }
     }
-  }
-}, { immediate: true })
+  },
+  { immediate: true },
+)
 
 function handleSubmit() {
   if (!formData.value.name.trim()) {
@@ -62,7 +66,7 @@ function handleSubmit() {
 }
 
 function getProjectTasks(projectId: string | number) {
-  return tasksStore.tasks.filter(task => String(task.projectId) === String(projectId))
+  return tasksStore.tasks.filter((task) => String(task.projectId) === String(projectId))
 }
 
 function handleClose() {
@@ -71,7 +75,7 @@ function handleClose() {
   if (!props.project) {
     formData.value = {
       name: '',
-      description: ''
+      description: '',
     }
   }
 }
@@ -106,11 +110,7 @@ function handleClose() {
       <div v-if="project" class="project-tasks">
         <h4>Задачи проекта:</h4>
         <div v-if="getProjectTasks(project.id).length" class="tasks-list">
-          <div 
-            v-for="task in getProjectTasks(project.id)" 
-            :key="task.id"
-            class="task-item"
-          >
+          <div v-for="task in getProjectTasks(project.id)" :key="task.id" class="task-item">
             <span class="task-title">{{ task.title }}</span>
             <span :class="['task-status', `status-${task.status}`]">{{ task.status }}</span>
           </div>
@@ -174,7 +174,6 @@ function handleClose() {
       background: var(--bg-tertiary);
       border-color: var(--border-color);
     }
-
   }
 
   .task-title {
@@ -185,7 +184,7 @@ function handleClose() {
     padding: v.$spacing-xs v.$spacing-sm;
     border-radius: v.$border-radius-sm;
     font-size: 0.75rem;
-    
+
     &.status-todo {
       background: var(--status-todo-bg);
       color: var(--text-primary);
@@ -196,7 +195,7 @@ function handleClose() {
         border: 1px solid var(--border-color);
       }
     }
-    
+
     &.status-in-progress {
       background: var(--status-in-progress-bg);
       color: var(--text-on-primary);
@@ -207,7 +206,7 @@ function handleClose() {
         border: 1px solid var(--border-color);
       }
     }
-    
+
     &.status-done {
       background: var(--status-done-bg);
       color: var(--text-on-primary);
