@@ -128,6 +128,21 @@
       "completed": false,
       "createdAt": "2025-05-08T13:55:28.954Z",
       "updatedAt": "2025-05-08T13:59:31.465Z"
+    },
+    {
+      "id": "14",
+      "title": "111111",
+      "description": "11111",
+      "status": "done",
+      "priority": "medium",
+      "assignedTo": "77dd",
+      "projectId": "2",
+      "deadline": "2025-05-07T18:51",
+      "attachments": [],
+      "createdBy": "1",
+      "completed": false,
+      "createdAt": "2025-05-12T15:51:28.422Z",
+      "updatedAt": "2025-05-12T15:51:28.422Z"
     }
   ],
   "projects": [
@@ -276,8 +291,8 @@
       "name": "Иван Петров",
       "email": "ivan@example.com",
       "role": "admin",
-      "password": "$2b$10$.sBQsSfR8YHU3FK4o9pGs.VxCr86VtBl/a2Qt3uzjXt/2V9PEM9Um",
-      "updatedAt": "2025-05-08T15:21:04.457Z"
+      "password": "$2b$10$v2uOhl8qlNWt/A6AA4FxSuQL2alqbsqp.JQDzHYDs9rkNOJwhBUum",
+      "updatedAt": "2025-05-12T15:50:37.898Z"
     },
     {
       "id": "2",
