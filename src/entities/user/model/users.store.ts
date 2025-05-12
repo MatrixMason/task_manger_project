@@ -20,10 +20,13 @@ export const useUsersStore = defineStore('users', () => {
     error.value = null
 
     try {
-      users.value = await usersApi.getAll()
+      const fetchedUsers = await usersApi.getAll()
+      users.value = fetchedUsers
+      return fetchedUsers
     } catch (e) {
       error.value = 'Не удалось загрузить пользователей'
       console.error(e)
+      return []
     } finally {
       isLoading.value = false
     }
