@@ -124,13 +124,13 @@ async function handleCreateProjectForm() {
     <header class="projects-header">
       <div class="header-title">
         <h1>Проекты</h1>
-        <button 
+        <BaseButton
           v-if="hasPermission('projects.create')"
-          class="btn btn--primary" 
+          variant="primary"
           @click="openCreateModal"
         >
           Создать проект
-        </button>
+        </BaseButton>
       </div>
       <ProjectFilters
         :initial-filters="projectsStore.filters"
@@ -172,24 +172,26 @@ async function handleCreateProjectForm() {
           </div>
         </div>
         <div class="project-actions">
-          <button 
+          <BaseButton
             v-if="hasPermission('projects.edit')"
-            class="btn btn--secondary" 
-            @click="openEditModal(project)"
+            variant="secondary"
+            size="sm"
             :disabled="projectsStore.loading"
+            @click="openEditModal(project)"
           >
             <span v-if="projectsStore.loading" class="loading-spinner"></span>
             <span v-else>Редактировать</span>
-          </button>
-          <button 
+          </BaseButton>
+          <BaseButton
             v-if="hasPermission('projects.delete')"
-            class="btn btn--danger" 
-            @click="handleDeleteProject(project)"
+            variant="danger"
+            size="sm"
             :disabled="projectsStore.loading"
+            @click="handleDeleteProject(project)"
           >
             <span v-if="projectsStore.loading" class="loading-spinner"></span>
             <span v-else>Удалить</span>
-          </button>
+          </BaseButton>
         </div>
       </div>
     </div>
@@ -410,46 +412,8 @@ async function handleCreateProjectForm() {
 
 .project-actions {
   display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-
-  .edit-button {
-    padding: 0.35rem 0.75rem;
-    font-size: 0.875rem;
-    border: 1px solid var(--color-primary);
-    border-radius: 4px;
-    color: var(--color-primary);
-    background: transparent;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background: var(--color-primary);
-      color: white;
-    }
-
-    &:active {
-      transform: translateY(1px);
-    }
-  }
-
-  .delete-button {
-    padding: 0.35rem 0.75rem;
-    font-size: 0.875rem;
-    border: 1px solid var(--color-error);
-    border-radius: 4px;
-    color: var(--color-error);
-    background: transparent;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background: var(--color-error);
-      color: white;
-    }
-
-    &:active {
-      transform: translateY(1px);
-    }
-  }
+  gap: v.$spacing-sm;
+  margin-top: v.$spacing-lg;
 }
 
 .loading,

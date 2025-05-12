@@ -98,12 +98,12 @@ defineEmits<{
   }
 
   &--danger {
-    background: var(--color-danger);
+    background: var(--color-error);
     color: var(--text-on-primary);
     border-color: transparent;
 
     &:hover:not(:disabled) {
-      background: var(--color-danger-hover);
+      background: var(--color-error-hover);
       box-shadow: var(--shadow-md);
     }
 
