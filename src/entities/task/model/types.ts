@@ -17,12 +17,12 @@ export interface TaskAttachment {
 }
 
 export interface Task {
-  id: string | number
+  id: number | string
   title: string
   description?: string
   status: TaskStatus
   priority: TaskPriority
-  assignedTo: string | null
+  assignedTo: number | string | null
   projectId: number
   createdAt: string
   updatedAt: string
@@ -39,8 +39,8 @@ export interface CreateTaskData {
   description?: string
   status: TaskStatus
   priority: TaskPriority
-  assignedTo?: string | null
-  projectId?: string | number
+  assignedTo?: number | string | null
+  projectId?: number | string
   deadline?: string | null
   attachments?: File[]
   createdBy: string

@@ -130,14 +130,22 @@ async function handleSubmit(formData: Partial<Task>) {
     if (props.task?.id) {
       await tasksStore.fetchTasks()
 
-      const taskId = props.task.id
+      const taskId = String(props.task.id)
       if (!taskId) {
         throw new Error('Task ID is required for update')
       }
 
       const updateData: Partial<Task> = {
-        ...taskData,
-        id: taskId
+        id: taskId,
+        title: taskData.title || '',
+        description: taskData.description,
+        status: taskData.status || 'todo',
+        priority: taskData.priority || 'medium',
+        assignedTo: taskData.assignedTo,
+        projectId: taskData.projectId,
+        deadline: taskData.deadline || null,
+        attachments: taskData.attachments,
+        updatedAt: now
       }
 
       const updateResult = await tasksStore.updateTask(taskId, updateData)

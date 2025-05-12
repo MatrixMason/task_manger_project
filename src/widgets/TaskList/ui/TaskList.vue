@@ -13,11 +13,7 @@ defineProps<Props>()
 <template>
   <div class="task-list" :class="{ 'task-list--loading': loading }">
     <TransitionGroup name="task">
-      <TaskCard
-        v-for="task in tasks"
-        :key="task.id"
-        :task="task"
-      />
+      <TaskCard v-for="task in tasks" :key="task.id" :task="task" />
     </TransitionGroup>
 
     <div v-if="!loading && tasks.length === 0" class="task-list__empty">

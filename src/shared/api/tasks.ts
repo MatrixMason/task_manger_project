@@ -2,8 +2,15 @@ import { api } from './axios'
 import type { Task, TaskFilters, TaskStatus, TaskAttachment } from '@/entities/task/model/types'
 
 interface CreateTaskData {
+  title: string
+  description?: string
+  status: TaskStatus
+  priority: string
+  assignedTo?: string | number | null
+  projectId?: string | number
+  deadline?: string | null
   attachments?: File[]
-  // Add other properties as needed
+  createdBy?: string
 }
 
 interface UpdatePositionData {
@@ -52,6 +59,8 @@ export const tasksApi = {
     const taskData = {
       ...data,
       id: nextId,
+      assignedTo: data.assignedTo ? String(data.assignedTo) : null,
+      projectId: data.projectId ? String(data.projectId) : undefined,
       completed: false,
       createdAt: now,
       updatedAt: now,
@@ -76,7 +85,11 @@ export const tasksApi = {
       console.log('API updateTask:', { id, task })
       
       // Convert files to base64 if present
-      const taskData = { ...task }
+      const taskData = { 
+        ...task,
+        assignedTo: task.assignedTo ? String(task.assignedTo) : null,
+        projectId: task.projectId ? String(task.projectId) : undefined
+      }
       if (taskData.attachments?.length) {
         const convertedAttachments = await Promise.all(
           taskData.attachments.map(async (attachment: File | TaskAttachment) => {

@@ -47,8 +47,9 @@ async function handleDelete(e: Event) {
   e.stopPropagation()
   if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
     try {
-      await tasksStore.deleteTask(props.task.id)
-      emit('delete', props.task.id)
+      const taskId = Number(props.task.id)
+      await tasksStore.deleteTask(taskId)
+      emit('delete', taskId)
     } catch (error) {
       console.error('Failed to delete task:', error)
       alert('Не удалось удалить задачу')
@@ -58,11 +59,12 @@ async function handleDelete(e: Event) {
 </script>
 
 <template>
-  <div 
+  <div
     v-if="hasPermission('tasks.view')"
-    class="task-card" 
-    :data-status="task.status" 
-    @click="emit('click', task)">
+    class="task-card"
+    :data-status="task.status"
+    @click="emit('click', task)"
+  >
     <BaseCard variant="hover">
       <div class="task-card__header">
         <h3>{{ task.title }}</h3>
@@ -88,11 +90,12 @@ async function handleDelete(e: Event) {
           </span>
           <span v-else class="task-card__no-user"> Не назначено </span>
         </div>
-        <button 
+        <button
           v-if="hasPermission('tasks.delete')"
-          class="task-card__delete" 
-          @click="handleDelete" 
-          title="Удалить задачу">
+          class="task-card__delete"
+          @click="handleDelete"
+          title="Удалить задачу"
+        >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
             <path
               d="M17 4V6H3V4H6.5L7.5 3H12.5L13.5 4H17M4 19V7H16V19C16 20.1 15.1 21 14 21H6C4.9 21 4 20.1 4 19M19 16H21V18H19V16M19 9H21V14H19V9Z"

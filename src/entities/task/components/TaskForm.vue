@@ -24,24 +24,24 @@ const emit = defineEmits<{
 }>()
 
 type FormData = {
-  id?: string
+  id?: number | string
   title: string
   description: string
   status: TaskStatus
   priority: TaskPriority
-  assignedTo: string | null
-  projectId: string
+  assignedTo: number | string | null
+  projectId: number | string
   deadline: string | null
 }
 
 const formData = ref<FormData>({
-  id: props.task?.id,
+  id: props.task?.id ? Number(props.task.id) : undefined,
   title: props.task?.title || '',
   description: props.task?.description || '',
   status: props.task?.status || 'todo',
   priority: props.task?.priority || 'medium',
   assignedTo: props.task?.assignedTo || null,
-  projectId: props.task?.projectId || '0',
+  projectId: props.task?.projectId ? Number(props.task.projectId) : 0,
   deadline: props.task?.deadline || null,
 })
 
@@ -142,7 +142,7 @@ function handleSubmit() {
         <BaseSelect
           v-model="formData.assignedTo"
           label="Исполнитель"
-          :options="users"
+          :options="users.map(u => ({ ...u, id: String(u.id) }))"
           :disabled="props.readonly"
           option-label="name"
           option-value="id"

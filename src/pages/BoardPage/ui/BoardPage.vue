@@ -29,7 +29,7 @@ function handleTaskClick(task: Task) {
 async function handleTaskSaved() {
   // Refresh tasks list after save
   await tasksStore.fetchTasks()
-  
+
   // Close the form
   showTaskForm.value = false
   selectedTask.value = undefined
@@ -62,7 +62,15 @@ onMounted(() => {
       </div>
       <div class="board-page__controls">
         <div class="board-page__filters">
-          <TaskFilters @filter="(filters) => tasksStore.setFilters({ ...filters, projectId: filters.projectId ? Number(filters.projectId) : undefined })" />
+          <TaskFilters
+            @filter="
+              (filters) =>
+                tasksStore.setFilters({
+                  ...filters,
+                  projectId: filters.projectId ? Number(filters.projectId) : undefined,
+                })
+            "
+          />
           <TaskSort @sort="(sort) => tasksStore.sortTasks(sort.field, sort.order)" />
         </div>
         <button class="btn btn--primary" @click="showAddTask = true">Добавить задачу</button>
@@ -75,9 +83,7 @@ onMounted(() => {
     </div>
 
     <!-- Отображаем состояние загрузки -->
-    <div v-if="loading" class="board-page__loading">
-      Загрузка...
-    </div>
+    <div v-if="loading" class="board-page__loading">Загрузка...</div>
     <div v-if="loading" class="board-page__loading">Загрузка задач...</div>
     <div v-else-if="error" class="board-page__error">
       {{ error }}
