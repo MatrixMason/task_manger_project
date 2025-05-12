@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import BaseModal from './BaseModal.vue'
 
-
 interface Props {
   show?: boolean
   title?: string
@@ -21,7 +20,7 @@ withDefaults(defineProps<Props>(), {
   title: 'Подтверждение',
   message: 'Вы уверены?',
   confirmLabel: 'Подтвердить',
-  cancelLabel: 'Отмена'
+  cancelLabel: 'Отмена',
 })
 
 const emit = defineEmits<Emits>()
@@ -60,6 +59,7 @@ function handleCancel() {
 
 .confirm-modal {
   padding: v.$spacing-lg;
+  color: v.$text-primary;
 
   &__title {
     margin: 0 0 v.$spacing-md;

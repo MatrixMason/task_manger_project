@@ -1,3 +1,118 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { useUsersStore } from '@/entities/user/model/users.store'
+import { usePermissions } from '@/features/Auth/lib/usePermissions'
+import type { User } from '@/entities/user/model/types'
+import type { RegisterData } from '@/shared/api/users'
+import BaseButton from '@/shared/ui/Button/BaseButton.vue'
+import UserFormModal from '@/features/UserManagement/ui/UserFormModal.vue'
+import ConfirmModal from '@/shared/ui/Modal/ConfirmModal.vue'
+import ToastNotification from '@/shared/ui/Notification/ToastNotification.vue'
+
+const usersStore = useUsersStore()
+const { hasPermission } = usePermissions()
+
+const users = ref<User[]>([])
+const loading = ref(false)
+const error = ref<string | null>(null)
+const showUserModal = ref(false)
+const selectedUser = ref<User | undefined>()
+const showDeleteConfirm = ref(false)
+const userToDelete = ref<User | undefined>()
+const notification = ref({ show: false, message: '', type: 'info' as 'success' | 'error' | 'info' })
+
+onMounted(async () => {
+  try {
+    loading.value = true
+    users.value = await usersStore.fetchUsers()
+  } catch (err) {
+    error.value = 'Ошибка при загрузке пользователей'
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
+})
+
+function openEditModal(user: User) {
+  selectedUser.value = user
+  showUserModal.value = true
+}
+
+function confirmDelete(user: User) {
+  userToDelete.value = user
+  showDeleteConfirm.value = true
+}
+
+async function handleUserSubmit(userData: Omit<User, 'id'> & { password?: string }) {
+  try {
+    if (selectedUser.value) {
+      const { password, ...updateData } = userData
+      await usersStore.updateUser(selectedUser.value.id, updateData)
+      users.value = await usersStore.fetchUsers()
+      notification.value = {
+        show: true,
+        message: 'Пользователь успешно обновлен',
+        type: 'success',
+      }
+      showUserModal.value = false
+      selectedUser.value = undefined
+    } else {
+      if (!userData.password) {
+        notification.value = {
+          show: true,
+          message: 'Пароль обязателен при создании пользователя',
+          type: 'error',
+        }
+        return
+      }
+      const { name, email, role, password } = userData
+      const createdUser = await usersStore.createUser({
+        name,
+        email,
+        role,
+        password,
+      } as RegisterData)
+      users.value = [...users.value, createdUser]
+      notification.value = {
+        show: true,
+        message: 'Пользователь успешно создан',
+        type: 'success',
+      }
+      showUserModal.value = false
+      selectedUser.value = undefined
+    }
+  } catch (err) {
+    notification.value = {
+      show: true,
+      message: err instanceof Error ? err.message : 'Не удалось создать пользователя',
+      type: 'error',
+    }
+    console.error(err)
+  }
+}
+
+async function handleDelete(userId: string) {
+  try {
+    await usersStore.deleteUser(userId)
+    users.value = await usersStore.fetchUsers()
+    showDeleteConfirm.value = false
+    userToDelete.value = undefined
+    notification.value = {
+      show: true,
+      message: 'Пользователь успешно удален',
+      type: 'success',
+    }
+  } catch (err) {
+    notification.value = {
+      show: true,
+      message: err instanceof Error ? err.message : 'Ошибка при удалении пользователя',
+      type: 'error',
+    }
+    console.error(err)
+  }
+}
+</script>
+
 <template>
   <div class="team-page">
     <header class="team-page__header">
@@ -12,9 +127,7 @@
     </header>
 
     <div class="team-page__content">
-      <div v-if="loading" class="team-page__loading">
-        Загрузка участников команды...
-      </div>
+      <div v-if="loading" class="team-page__loading">Загрузка участников команды...</div>
       <div v-else-if="error" class="team-page__error">
         {{ error }}
       </div>
@@ -53,170 +166,28 @@
       </div>
     </div>
 
-    <!-- Модальное окно создания/редактирования пользователя -->
-    <BaseModal
+    <UserFormModal
       v-model:show="showUserModal"
-      :title="editingUser ? 'Редактировать участника' : 'Добавить участника'"
-    >
-      <form @submit.prevent="handleSubmit" class="user-form">
-        <div class="form-group">
-          <BaseInput
-            v-model="formData.name"
-            label="Имя"
-            required
-          />
-        </div>
-        <div class="form-group">
-          <BaseInput
-            v-model="formData.email"
-            label="Email"
-            type="email"
-            required
-          />
-        </div>
-        <div class="form-group">
-          <BaseSelect
-            v-model="formData.role"
-            label="Роль"
-            :options="roleOptions"
-            required
-          />
-        </div>
-        <div class="form-group" v-if="!editingUser">
-          <BaseInput
-            v-model="formData.password"
-            label="Пароль"
-            type="password"
-            required
-          />
-        </div>
-        <div class="form-actions">
-          <BaseButton
-            type="button"
-            variant="secondary"
-            @click="showUserModal = false"
-          >
-            Отмена
-          </BaseButton>
-          <BaseButton
-            type="submit"
-            variant="primary"
-          >
-            {{ editingUser ? 'Сохранить' : 'Добавить' }}
-          </BaseButton>
-        </div>
-      </form>
-    </BaseModal>
+      :edit-user="selectedUser"
+      @close="selectedUser = undefined"
+      @submit="handleUserSubmit"
+    />
 
-    <!-- Модальное окно подтверждения удаления -->
     <ConfirmModal
       v-model:show="showDeleteConfirm"
       title="Удалить участника"
-      :message="'Вы действительно хотите удалить участника ' + userToDelete?.name + '?'"
-      @confirm="handleDelete"
+      :message="
+        userToDelete ? `Вы действительно хотите удалить участника ${userToDelete.name}?` : ''
+      "
+      @confirm="() => userToDelete && handleDelete(userToDelete.id)"
     />
   </div>
+  <ToastNotification
+    v-model:show="notification.show"
+    :type="notification.type"
+    :message="notification.message"
+  />
 </template>
-
-<script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useUsersStore } from '@/entities/user/model/users.store'
-import { usePermissions } from '@/features/Auth/lib/usePermissions'
-import type { User, UserRole } from '@/entities/user/model/types'
-import BaseButton from '@/shared/ui/Button/BaseButton.vue'
-import BaseModal from '@/shared/ui/Modal/BaseModal.vue'
-import BaseInput from '@/shared/ui/Input/BaseInput.vue'
-import BaseSelect from '@/shared/ui/Select/BaseSelect.vue'
-import ConfirmModal from '@/shared/ui/Modal/ConfirmModal.vue'
-
-const usersStore = useUsersStore()
-const { users, isLoading: loading, error } = storeToRefs(usersStore)
-const { hasPermission } = usePermissions()
-
-const showUserModal = ref(false)
-const showDeleteConfirm = ref(false)
-const editingUser = ref<User | null>(null)
-const userToDelete = ref<User | null>(null)
-const formData = ref({
-  name: '',
-  email: '',
-  role: '' as UserRole,
-  password: ''
-})
-
-const roleOptions = [
-  { value: 'admin', label: 'Администратор' },
-  { value: 'manager', label: 'Менеджер' },
-  { value: 'developer', label: 'Разработчик' },
-  { value: 'designer', label: 'Дизайнер' }
-]
-
-onMounted(async () => {
-  await usersStore.fetchUsers()
-})
-
-function openEditModal(user: User) {
-  editingUser.value = user
-  formData.value = {
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    password: ''
-  }
-  showUserModal.value = true
-}
-
-function confirmDelete(user: User) {
-  userToDelete.value = user
-  showDeleteConfirm.value = true
-}
-
-async function handleSubmit() {
-  try {
-    if (editingUser.value) {
-      await usersStore.updateUser(editingUser.value.id, {
-        name: formData.value.name,
-        email: formData.value.email,
-        role: formData.value.role
-      })
-    } else {
-      await usersStore.createUser({
-        name: formData.value.name,
-        email: formData.value.email,
-        role: formData.value.role,
-        password: formData.value.password
-      })
-    }
-    showUserModal.value = false
-    resetForm()
-  } catch (e) {
-    console.error('Failed to save user:', e)
-  }
-}
-
-async function handleDelete() {
-  if (!userToDelete.value) return
-
-  try {
-    await usersStore.deleteUser(userToDelete.value.id)
-    showDeleteConfirm.value = false
-    userToDelete.value = null
-  } catch (e) {
-    console.error('Failed to delete user:', e)
-  }
-}
-
-function resetForm() {
-  editingUser.value = null
-  formData.value = {
-    name: '',
-    email: '',
-    role: '' as UserRole,
-    password: ''
-  }
-}
-</script>
 
 <style lang="scss" scoped>
 .team-page {
@@ -231,7 +202,6 @@ function resetForm() {
     h1 {
       margin: 0;
       font-size: 1.5rem;
-      font-weight: 600;
       color: var(--text-primary);
     }
   }
@@ -251,70 +221,42 @@ function resetForm() {
 .team-members {
   display: grid;
   gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
 }
 
 .team-member {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  padding: 1rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    border-color: var(--border-hover);
-  }
+  align-items: flex-start;
 
   &__info {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+    flex: 1;
   }
 
   &__name {
     font-weight: 500;
     color: var(--text-primary);
+    margin-bottom: 0.25rem;
   }
 
   &__email {
     color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin-bottom: 0.5rem;
   }
 
   &__role {
-    .role-badge {
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      font-size: 0.75rem;
-      font-weight: 500;
-      text-transform: capitalize;
-
-      &.role-admin {
-        background: var(--color-primary-light);
-        color: var(--color-primary);
-      }
-
-      &.role-manager {
-        background: var(--color-success-light);
-        color: var(--color-success);
-      }
-
-      &.role-developer {
-        background: var(--color-warning-light);
-        color: var(--color-warning);
-      }
-
-      &.role-designer {
-        background: var(--color-info-light);
-        color: var(--color-info);
-      }
-    }
+    margin-top: 0.5rem;
   }
 
   &__actions {
     display: flex;
     gap: 0.5rem;
+    margin-left: 1rem;
   }
 }
 
