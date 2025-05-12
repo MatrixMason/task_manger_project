@@ -7,56 +7,60 @@
       "status": "todo",
       "priority": "low",
       "createdAt": "2025-04-10T10:00:00.000Z",
-      "updatedAt": "2025-05-08T08:01:56.735Z",
-      "assignedTo": "4",
+      "updatedAt": "2025-05-12T15:41:39.669Z",
+      "assignedTo": "77dd",
       "deadline": "2025-05-08T09:41",
-      "projectId": "1",
+      "projectId": 1,
       "completed": false,
       "attachments": [],
-      "position": 1
+      "position": 1,
+      "createdBy": "1"
     },
     {
       "id": "2",
       "title": "ЗАДАЧА 2",
       "description": "ипапаапап",
-      "status": "done",
-      "priority": "medium",
+      "status": "todo",
+      "priority": "high",
       "createdAt": "2025-04-10T11:00:00.000Z",
-      "updatedAt": "2025-05-08T13:19:05.182Z",
+      "updatedAt": "2025-05-12T15:41:28.137Z",
       "assignedTo": "77dd",
       "deadline": "2025-05-16T12:25",
-      "projectId": "4",
+      "projectId": 4,
       "attachments": [],
       "completed": false,
-      "position": 0
+      "position": 0,
+      "createdBy": "1"
     },
     {
       "id": "3",
       "title": "Написание тестов",
       "description": "Покрыть основной функционал unit-тестами",
-      "status": "in-progress",
+      "status": "todo",
       "priority": "low",
       "createdAt": "2025-04-10T12:00:00.000Z",
-      "updatedAt": "2025-05-07T12:38:09.985Z",
-      "assignedTo": "1",
+      "updatedAt": "2025-05-12T15:41:32.505Z",
+      "assignedTo": "77dd",
       "deadline": "2025-05-14T10:50",
-      "projectId": "1ed7",
+      "projectId": null,
       "position": 0,
       "attachments": [],
-      "completed": false
+      "completed": false,
+      "createdBy": "1"
     },
     {
       "id": "4",
       "title": "ТЕСТ1111",
       "description": "ОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\nОПИСАНИЕ\n",
-      "status": "in-progress",
+      "status": "done",
       "createdAt": "2025-04-10T12:00:00.000Z",
-      "updatedAt": "2025-05-07T16:23:04.497Z",
+      "updatedAt": "2025-05-12T15:38:28.665Z",
       "priority": "medium",
-      "assignedTo": 2,
+      "assignedTo": "2eea",
       "projectId": 1,
       "deadline": "2025-05-31T09:34",
-      "position": 1
+      "position": 1,
+      "createdBy": "1"
     },
     {
       "id": "9",
@@ -75,35 +79,37 @@
       "id": "10",
       "title": "Задача211111",
       "description": "Описание",
-      "status": "done",
+      "status": "in-progress",
       "priority": "high",
-      "assignedTo": "e209",
+      "assignedTo": 4,
       "projectId": 1,
       "createdAt": "2025-05-02T17:35:03.603Z",
-      "updatedAt": "2025-05-07T16:27:40.200Z",
+      "updatedAt": "2025-05-12T15:41:05.073Z",
       "deadline": "2025-05-09T11:33",
       "attachments": [],
       "completed": false,
-      "position": 1
+      "position": 1,
+      "createdBy": "1"
     },
     {
       "id": "11",
       "title": "Задача 999",
       "description": "Описание",
-      "status": "done",
+      "status": "in-progress",
       "priority": "low",
-      "assignedTo": "2eea",
-      "projectId": "1ed7",
+      "assignedTo": 4,
+      "projectId": 0,
       "createdAt": "2025-05-02T17:49:48.577Z",
-      "updatedAt": "2025-05-02T17:49:48.577Z",
+      "updatedAt": "2025-05-12T15:41:10.897Z",
       "deadline": "2025-05-03T20:49",
-      "position": 2
+      "position": 2,
+      "createdBy": "1"
     },
     {
       "id": "12",
       "title": "ДИЗАЙН",
       "description": "ДИЗАЙН",
-      "status": "todo",
+      "status": "done",
       "priority": "low",
       "assignedTo": "03dc",
       "projectId": "4",
@@ -118,13 +124,13 @@
       "id": "13",
       "title": "ДИЗАЙН 222",
       "description": "22222222222",
-      "status": "todo",
+      "status": "done",
       "priority": "medium",
       "assignedTo": "4",
-      "projectId": "0",
+      "projectId": "1",
       "deadline": "2025-05-31T16:55",
       "attachments": [],
-      "createdBy": "03dc",
+      "createdBy": "1",
       "completed": false,
       "createdAt": "2025-05-08T13:55:28.954Z",
       "updatedAt": "2025-05-08T13:59:31.465Z"
@@ -169,14 +175,6 @@
     }
   ],
   "comments": [
-    {
-      "id": "3a44",
-      "taskId": "2",
-      "userId": "03dc",
-      "createdAt": "2025-05-07T08:10:14.670Z",
-      "updatedAt": "2025-05-07T08:10:14.670Z",
-      "attachments": []
-    },
     {
       "id": "d694",
       "taskId": "3",
@@ -307,7 +305,8 @@
       "name": "Петр Петров",
       "email": "petr.p@example.com",
       "role": "manager",
-      "password": "$2b$10$m6fU2tZ33wk.uvsZn0y1ouezwwAnSRBu9.AOAlYQUWViTqBNpEa26"
+      "password": "$2b$10$m6fU2tZ33wk.uvsZn0y1ouezwwAnSRBu9.AOAlYQUWViTqBNpEa26",
+      "updatedAt": "2025-05-08T21:02:40.587Z"
     },
     {
       "id": "4",
@@ -334,29 +333,11 @@
     },
     {
       "id": "2eea",
-      "name": "TEST",
+      "name": "TEST999",
       "email": "test@test.ru",
       "role": "developer",
       "createdAt": "2025-05-02T15:52:46.866Z",
-      "updatedAt": "2025-05-02T15:52:46.866Z"
-    },
-    {
-      "id": "e209",
-      "name": "Ivan",
-      "email": "test1@test.ru",
-      "role": "developer",
-      "password": "$2b$10$m6fU2tZ33wk.uvsZn0y1ouezwwAnSRBu9.AOAlYQUWViTqBNpEa26",
-      "createdAt": "2025-05-02T16:44:25.141Z",
-      "updatedAt": "2025-05-02T16:44:25.144Z"
-    },
-    {
-      "id": "a858",
-      "name": "Test",
-      "email": "test911@test.ru",
-      "role": "developer",
-      "password": "$2b$10$1Rm.wPnwu4YSpTDd7PFAx.RZoHkU0wxOF6Z08QpcHjsZNx1gcfqlq",
-      "createdAt": "2025-05-07T06:33:56.060Z",
-      "updatedAt": "2025-05-07T06:33:56.060Z"
+      "updatedAt": "2025-05-08T21:04:37.400Z"
     },
     {
       "id": "03dc",
@@ -366,6 +347,42 @@
       "password": "$2b$10$zcevaBnsPvEJ3j6b2Cxu0OuRU.9rxScSiToeCuc/OleYJsovk8yny",
       "createdAt": "2025-05-07T06:53:33.608Z",
       "updatedAt": "2025-05-07T06:53:33.608Z"
+    },
+    {
+      "id": "113c",
+      "name": "ТУПИЦЫН",
+      "email": "1@1.ru",
+      "role": "designer",
+      "password": "$2b$10$U0U8uP7.uGpVueCsFWxnsOBrbqEqbc0byB7vvH/YsjWyqpP7N5NRK",
+      "createdAt": "2025-05-08T21:03:28.074Z",
+      "updatedAt": "2025-05-08T21:03:28.074Z"
+    },
+    {
+      "id": "6e55",
+      "name": "ЕУЫЕ",
+      "email": "fdmfdk@fdf.ru",
+      "role": "designer",
+      "password": "$2b$10$vPKSYm65cDC1W8Utk6FtU.THEPXAFsdD0Jni81UGm33tmlKRJpfmS",
+      "createdAt": "2025-05-08T21:26:20.501Z",
+      "updatedAt": "2025-05-08T21:26:20.501Z"
+    },
+    {
+      "id": "012e",
+      "name": "fdfdfdf",
+      "email": "dssdsd@dsddssddsdsd.ru",
+      "role": "manager",
+      "password": "$2b$10$p3LidH7AwMe.XjT0iC/cYe0USLgRaPSOCSwT6dNCDv8NPcAKVaEiK",
+      "createdAt": "2025-05-08T21:53:03.581Z",
+      "updatedAt": "2025-05-08T21:53:03.581Z"
+    },
+    {
+      "id": "8319",
+      "name": "fdfdfdf",
+      "email": "dssdsd@dsddssddsdsd.ru",
+      "role": "manager",
+      "password": "$2b$10$flCzAaUxwQ2BG4SqhQwtK.NX.B87LHuTupFraYUar1DwdEW2ttDbK",
+      "createdAt": "2025-05-08T21:53:03.659Z",
+      "updatedAt": "2025-05-08T21:53:03.659Z"
     }
   ]
 }

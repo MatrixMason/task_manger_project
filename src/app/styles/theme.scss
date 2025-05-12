@@ -7,7 +7,7 @@
     color: var(--text-primary);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-sm);
-    
+
     &:focus {
       border-color: var(--color-primary);
       outline: none;
@@ -20,7 +20,7 @@
     option {
       background-color: var(--bg-primary);
       color: var(--text-primary);
-      
+
       &:hover {
         background-color: var(--color-primary);
         color: var(--text-on-primary);
@@ -76,7 +76,6 @@
 }
 
 :root[data-theme='dark'] {
-  // Form controls dark theme styles
   select,
   input,
   textarea {
@@ -89,7 +88,7 @@
 
     option {
       background-color: var(--bg-primary);
-      
+
       &:hover {
         background-color: var(--color-primary);
         color: var(--text-on-primary);
