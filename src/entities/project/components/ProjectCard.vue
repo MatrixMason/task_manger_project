@@ -67,7 +67,7 @@ const statusColor = computed(() => {
     margin-bottom: $spacing-sm;
   }
 
-  &__title {
+  .project-card__title {
     margin: 0;
     font-size: 1.25rem;
     color: var(--text-primary);

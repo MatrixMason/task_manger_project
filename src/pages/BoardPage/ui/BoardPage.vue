@@ -119,7 +119,7 @@ onMounted(() => {
     align-items: center;
   }
 
-  &__title {
+  .board-page__title {
     h1 {
       margin: 0;
       font-size: 24px;

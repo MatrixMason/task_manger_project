@@ -61,7 +61,7 @@ function handleCancel() {
   padding: v.$spacing-lg;
   color: v.$text-primary;
 
-  &__title {
+  .confirm-modal__title {
     margin: 0 0 v.$spacing-md;
     font-size: 1.25rem;
     color: v.$text-primary;

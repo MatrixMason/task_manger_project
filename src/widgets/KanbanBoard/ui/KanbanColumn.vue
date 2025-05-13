@@ -83,7 +83,7 @@ function handleDrop(event: DragEvent) {
     border-color: var(--color-primary);
   }
 
-  &__title {
+  .kanban-column__title {
     font-size: 1.25rem;
     margin-bottom: 1rem;
     color: var(--text-primary);

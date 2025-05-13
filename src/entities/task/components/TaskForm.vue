@@ -66,7 +66,11 @@ onMounted(async () => {
 })
 
 function handleSubmit() {
-  emit('submit', formData.value)
+  const formDataWithTypes = {
+    ...formData.value,
+    projectId: formData.value.projectId ? Number(formData.value.projectId) : undefined,
+  }
+  emit('submit', formDataWithTypes)
 }
 </script>
 
@@ -142,7 +146,7 @@ function handleSubmit() {
         <BaseSelect
           v-model="formData.assignedTo"
           label="Исполнитель"
-          :options="users.map(u => ({ ...u, id: String(u.id) }))"
+          :options="users"
           :disabled="props.readonly"
           option-label="name"
           option-value="id"

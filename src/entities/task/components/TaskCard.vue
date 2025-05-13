@@ -47,9 +47,9 @@ async function handleDelete(e: Event) {
   e.stopPropagation()
   if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
     try {
-      const taskId = Number(props.task.id)
-      await tasksStore.deleteTask(taskId)
-      emit('delete', taskId)
+      const taskId = props.task.id
+      await tasksStore.deleteTask(String(taskId))
+      emit('delete', Number(taskId))
     } catch (error) {
       console.error('Failed to delete task:', error)
       alert('Не удалось удалить задачу')

@@ -130,25 +130,17 @@ async function handleSubmit(formData: Partial<Task>) {
     if (props.task?.id) {
       await tasksStore.fetchTasks()
 
-      const taskId = String(props.task.id)
+      const taskId = props.task.id
       if (!taskId) {
         throw new Error('Task ID is required for update')
       }
 
       const updateData: Partial<Task> = {
-        id: taskId,
-        title: taskData.title || '',
-        description: taskData.description,
-        status: taskData.status || 'todo',
-        priority: taskData.priority || 'medium',
-        assignedTo: taskData.assignedTo,
-        projectId: taskData.projectId,
-        deadline: taskData.deadline || null,
-        attachments: taskData.attachments,
-        updatedAt: now
+        ...taskData,
+        id: String(taskId),
       }
 
-      const updateResult = await tasksStore.updateTask(taskId, updateData)
+      const updateResult = await tasksStore.updateTask(String(taskId), updateData)
       if (!updateResult || !updateResult.id) {
         throw new Error('Failed to update task: Invalid response from server')
       }
@@ -481,7 +473,7 @@ async function handleSubmit(formData: Partial<Task>) {
   padding-top: 1.5rem;
   border-top: 2px solid var(--color-border);
 
-  &__title {
+  .task-form-modal__title {
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 1.5rem;

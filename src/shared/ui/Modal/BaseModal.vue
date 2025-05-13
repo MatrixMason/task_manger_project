@@ -134,7 +134,7 @@ watch(
     justify-content: space-between;
   }
 
-  &__title {
+  .base-modal__title {
     color: var(--text-primary);
     margin: 0;
     font-size: 1.25rem;
