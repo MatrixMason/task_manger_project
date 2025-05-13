@@ -21,6 +21,13 @@ const showDeleteConfirm = ref(false)
 const userToDelete = ref<User | undefined>()
 const notification = ref({ show: false, message: '', type: 'info' as 'success' | 'error' | 'info' })
 
+const roleOptions = {
+  admin: 'Администратор',
+  manager: 'Менеджер',
+  developer: 'Разработчик',
+  designer: 'Дизайнер',
+}
+
 onMounted(async () => {
   try {
     loading.value = true
@@ -137,30 +144,24 @@ async function handleDelete(userId: string) {
             <div class="team-member__name">{{ user.name }}</div>
             <div class="team-member__email">{{ user.email }}</div>
             <div class="team-member__role">
-              <span class="role-badge" :class="'role-' + user.role">
-                {{ user.role }}
-              </span>
+              <span class="role-badge" :class="'role-' + user.role">{{ roleOptions[user.role] }}</span>
             </div>
-          </div>
-          <div class="team-member__actions">
-            <BaseButton
-              v-if="hasPermission('users.edit')"
-              variant="secondary"
-              size="sm"
-              class="edit-button"
-              @click="openEditModal(user)"
-            >
-              Редактировать
-            </BaseButton>
-            <BaseButton
-              v-if="hasPermission('users.delete')"
-              variant="danger"
-              size="sm"
-              class="delete-button"
-              @click="confirmDelete(user)"
-            >
-              Удалить
-            </BaseButton>
+            <div class="team-member__actions">
+              <BaseButton
+                v-if="hasPermission('users.edit')"
+                variant="secondary"
+                size="sm"
+                class="edit-button"
+                @click="openEditModal(user)"
+              >Редактировать</BaseButton>
+              <BaseButton
+                v-if="hasPermission('users.delete')"
+                variant="danger"
+                size="sm"
+                class="delete-button"
+                @click="confirmDelete(user)"
+              >Удалить</BaseButton>
+            </div>
           </div>
         </div>
       </div>
@@ -219,38 +220,69 @@ async function handleDelete(userId: string) {
 }
 
 .team-members {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .team-member {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: 0.5rem;
-  padding: 1rem;
+  padding: 0.75rem 1rem;
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
 
   &__info {
     flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
   }
 
   &__name {
     font-weight: 500;
     color: var(--text-primary);
-    margin-bottom: 0.25rem;
+    min-width: 150px;
   }
 
   &__email {
     color: var(--text-secondary);
     font-size: 0.875rem;
-    margin-bottom: 0.5rem;
+    flex: 1;
   }
 
   &__role {
-    margin-top: 0.5rem;
+    margin-top: 0;
+    
+    .role-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 1rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      
+      &.role-admin {
+        background-color: #fecaca;
+        color: #991b1b;
+      }
+      
+      &.role-manager {
+        background-color: #bfdbfe;
+        color: #1e40af;
+      }
+      
+      &.role-developer {
+        background-color: #bbf7d0;
+        color: #166534;
+      }
+      
+      &.role-designer {
+        background-color: #ddd6fe;
+        color: #5b21b6;
+      }
+    }
   }
 
   &__actions {
