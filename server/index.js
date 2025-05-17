@@ -9,7 +9,11 @@ const app = express()
 const PORT = process.env.PORT || 3000
 const JWT_SECRET = process.env.JWT_SECRET || 'password'
 
-app.use(cors())
+app.use(cors({
+  origin: ['https://konstanta-tech.ru', 'http://localhost:5173'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}))
 app.use(express.json())
 
 const dbPath = path.join(__dirname, 'db.json')
