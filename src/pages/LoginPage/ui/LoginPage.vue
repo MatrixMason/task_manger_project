@@ -58,6 +58,7 @@ async function handleSubmit() {
     router.push('/')
   } catch (e) {
     console.error('Failed to login:', e)
+    error.value = e instanceof Error ? e.message : 'Ошибка авторизации'
   }
 }
 </script>
@@ -75,9 +76,9 @@ async function handleSubmit() {
 .login-form {
   width: 100%;
   max-width: 400px;
-  padding: 2rem;
+  padding: clamp(1rem, 5vw, 2rem);
   background: var(--bg-secondary);
-  border-radius: 8px;
+  border-radius: clamp(4px, 2vw, 8px);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 
   h1 {

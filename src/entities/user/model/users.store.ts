@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue'
+import { storage } from '@/shared/lib/storage'
 import { defineStore } from 'pinia'
 import type { User, LoginCredentials } from './types'
 import { usersApi } from '@/shared/api/users'
@@ -9,7 +10,7 @@ const TOKEN_KEY = 'auth_token'
 export const useUsersStore = defineStore('users', () => {
   const users = ref<User[]>([])
   const currentUser = ref<User | null>(null)
-  const accessToken = ref<string | null>(localStorage.getItem(TOKEN_KEY))
+  const accessToken = ref<string | null>(storage.get(TOKEN_KEY))
   const isLoading = ref(false)
   const error = ref<string | null>(null)
 
@@ -64,8 +65,12 @@ export const useUsersStore = defineStore('users', () => {
       localStorage.setItem(TOKEN_KEY, response.accessToken)
       await getCurrentUser()
     } catch (e) {
-      error.value = 'Не удалось авторизоваться'
-      console.error(e)
+      if (e instanceof Error) {
+        error.value = e.message === 'Network Error' ? 'Не удалось подключиться к серверу' : e.message
+      } else {
+        error.value = 'Не удалось авторизоваться'
+      }
+      console.error('Login error:', e)
     } finally {
       isLoading.value = false
     }
