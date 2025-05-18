@@ -9,4 +9,6 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["node", "server/index.js"]
+ENV NODE_ENV=production
+
+CMD ["node", "--experimental-modules", "server/index.js"]

@@ -57,16 +57,20 @@ export const useUsersStore = defineStore('users', () => {
   async function login(credentials: LoginCredentials) {
     isLoading.value = true
     error.value = null
-
     try {
       const response = await usersApi.login(credentials)
-      currentUser.value = response.user
-      accessToken.value = response.accessToken
       localStorage.setItem(TOKEN_KEY, response.accessToken)
-      await getCurrentUser()
+      accessToken.value = response.accessToken
+      currentUser.value = response.user
     } catch (e) {
       if (e instanceof Error) {
-        error.value = e.message === 'Network Error' ? 'Не удалось подключиться к серверу' : e.message
+        if (e.message === 'Network Error') {
+          error.value = 'Не удалось подключиться к серверу'
+        } else if (e.message.includes('400')) {
+          error.value = 'Неверный email или пароль'
+        } else {
+          error.value = e.message
+        }
       } else {
         error.value = 'Не удалось авторизоваться'
       }
@@ -78,7 +82,7 @@ export const useUsersStore = defineStore('users', () => {
 
   async function getCurrentUser() {
     if (!accessToken.value) return
-    
+
     isLoading.value = true
     error.value = null
 
@@ -122,7 +126,7 @@ export const useUsersStore = defineStore('users', () => {
 
     try {
       const updatedUser = await usersApi.updateUser(id, data)
-      const index = users.value.findIndex(user => user.id === id)
+      const index = users.value.findIndex((user) => user.id === id)
       if (index !== -1) {
         users.value[index] = updatedUser
       }
@@ -142,7 +146,7 @@ export const useUsersStore = defineStore('users', () => {
 
     try {
       await usersApi.deleteUser(id)
-      users.value = users.value.filter(user => user.id !== id)
+      users.value = users.value.filter((user) => user.id !== id)
     } catch (e) {
       error.value = 'Не удалось удалить пользователя'
       console.error(e)
@@ -203,6 +207,6 @@ export const useUsersStore = defineStore('users', () => {
     updateUser,
     deleteUser,
     checkEmailExists,
-    updatePassword
+    updatePassword,
   }
 })

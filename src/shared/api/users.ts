@@ -14,31 +14,9 @@ export interface RegisterData extends LoginCredentials {
 
 export const usersApi = {
   async getCurrentUser(): Promise<User> {
-    const token = localStorage.getItem('auth_token')
-    if (!token) throw new Error('Not authenticated')
-
-    try {
-      const tokenParts = token.split('.')
-      if (tokenParts.length !== 3) throw new Error('Invalid token format')
-
-      const payload = JSON.parse(atob(tokenParts[1]))
-      if (!payload.userId || !payload.role) throw new Error('Invalid token payload')
-
-      const user = await this.getUser(payload.userId)
-      if (!user) throw new Error('User not found')
-
-      // Проверяем, что роль в токене совпадает с ролью в БД
-      if (user.role !== payload.role) {
-        throw new Error('Role mismatch')
-      }
-
-      const { password, ...userWithoutPassword } = user
-      return userWithoutPassword
-    } catch (error) {
-      console.error('Failed to get current user:', error)
-      localStorage.removeItem('auth_token')
-      throw new Error('Invalid token')
-    }
+    const { data: user } = await apiInstance.get<UserWithPassword>('/me')
+    const { password: _, ...userWithoutPassword } = user
+    return userWithoutPassword
   },
   async getAll() {
     const { data } = await apiInstance.get<User[]>('/users')
@@ -68,7 +46,8 @@ export const usersApi = {
     }
 
     const { data: createdUser } = await apiInstance.post<UserWithPassword>('/users', newUser)
-    const { password: _password, ...userWithoutPassword } = createdUser
+    const { id, name, email, role, createdAt, updatedAt } = createdUser
+    const userWithoutPassword = { id, name, email, role, createdAt, updatedAt }
     const accessToken = btoa(JSON.stringify({ userId: createdUser.id, timestamp: Date.now() }))
 
     return {
@@ -142,34 +121,8 @@ export const usersApi = {
     })
   },
 
-  async login({ email, password }: LoginCredentials): Promise<AuthResponse> {
-    const { data: users } = await apiInstance.get<UserWithPassword[]>('/users')
-    const user = users.find((u) => u.email === email)
-    if (!user) {
-      throw new Error('Пользователь не найден')
-    }
-
-    const isPasswordValid = await passwordUtils.compare(password, user.password)
-    if (!isPasswordValid) {
-      throw new Error('Неверный пароль')
-    }
-
-    const { password: _pwd, ...userWithoutPassword } = user
-
-    const header = btoa(JSON.stringify({ alg: 'none', typ: 'JWT' }))
-    const payload = btoa(
-      JSON.stringify({
-        userId: user.id,
-        role: user.role,
-        exp: Date.now() + 24 * 60 * 60 * 1000,
-      }),
-    )
-    const signature = btoa('signature')
-    const accessToken = `${header}.${payload}.${signature}`
-
-    return {
-      user: userWithoutPassword,
-      accessToken,
-    }
+  async login(credentials: LoginCredentials): Promise<AuthResponse> {
+    const { data } = await apiInstance.post<AuthResponse>('/login', credentials)
+    return data
   },
 }
