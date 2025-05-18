@@ -2,7 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import { readFileSync } from 'fs'
+import { readFileSync, writeFileSync } from 'fs'
 import { join, dirname } from 'path'
 import { fileURLToPath } from 'url'
 
@@ -49,10 +49,6 @@ const authenticateToken = (req, res, next) => {
         return res.status(403).json({ error: 'Пользователь не найден' })
       }
 
-      if (user.role !== decoded.role) {
-        return res.status(403).json({ error: 'Недостаточно прав' })
-      }
-
       req.user = decoded
       next()
     })
@@ -90,7 +86,8 @@ app.post('/login', async (req, res) => {
       { expiresIn: '24h' },
     )
 
-    const { password: _, ...userWithoutPassword } = user
+    const userWithoutPassword = { ...user }
+    delete userWithoutPassword.password
 
     res.json({
       user: userWithoutPassword,
@@ -107,13 +104,69 @@ app.get('/me', authenticateToken, (req, res) => {
   if (!user) {
     return res.status(404).json({ error: 'Пользователь не найден' })
   }
-  const { password, ...userWithoutPassword } = user
+  const userWithoutPassword = { ...user }
+  delete userWithoutPassword.password
   res.json(userWithoutPassword)
 })
 
 app.get('/users', authenticateToken, (req, res) => {
-  const usersWithoutPasswords = db.users.map(({ password, ...user }) => user)
+  const usersWithoutPasswords = db.users.map((user) => {
+    const userWithoutPassword = { ...user }
+    delete userWithoutPassword.password
+    return userWithoutPassword
+  })
   res.json(usersWithoutPasswords)
+})
+
+app.post('/users', async (req, res) => {
+  try {
+    const { email, password, name, role } = req.body
+
+    if (!email || !password || !name) {
+      return res.status(400).json({ error: 'Необходимо указать email, пароль и имя' })
+    }
+
+    const existingUser = db.users.find((u) => u.email === email)
+    if (existingUser) {
+      return res.status(400).json({ error: 'Пользователь с таким email уже существует' })
+    }
+
+    const hashedPassword = password.startsWith('$2b$') ? password : await bcrypt.hash(password, 10)
+    const newUser = {
+      id: Date.now().toString(),
+      email,
+      password: hashedPassword,
+      name,
+      role,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+
+    db.users.push(newUser)
+
+    writeFileSync(dbPath, JSON.stringify(db, null, 2), 'utf-8')
+
+    const token = jwt.sign(
+      {
+        userId: newUser.id,
+        role: newUser.role,
+        email: newUser.email,
+      },
+      JWT_SECRET,
+      { expiresIn: '24h' },
+    )
+
+    const userWithoutPassword = { ...newUser }
+    delete userWithoutPassword.password
+
+    res.status(201).json({
+      user: userWithoutPassword,
+      accessToken: token,
+    })
+  } catch (error) {
+    console.error('Register error:', error)
+    res.status(500).json({ error: 'Ошибка сервера' })
+  }
 })
 
 app.listen(PORT, () => {

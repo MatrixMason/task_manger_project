@@ -29,31 +29,12 @@ export const usersApi = {
   },
 
   async register(data: RegisterData): Promise<AuthResponse> {
-    const { data: users } = await apiInstance.get<User[]>('/users')
-    if (users.some((u) => u.email === data.email)) {
-      throw new Error('Пользователь с таким email уже существует')
-    }
+    await this.createUser(data)
 
-    const hashedPassword = await passwordUtils.hash(data.password)
-
-    const newUser: Omit<UserWithPassword, 'id'> = {
-      name: data.name,
+    return this.login({
       email: data.email,
-      role: data.role || 'developer',
-      password: hashedPassword,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }
-
-    const { data: createdUser } = await apiInstance.post<UserWithPassword>('/users', newUser)
-    const { id, name, email, role, createdAt, updatedAt } = createdUser
-    const userWithoutPassword = { id, name, email, role, createdAt, updatedAt }
-    const accessToken = btoa(JSON.stringify({ userId: createdUser.id, timestamp: Date.now() }))
-
-    return {
-      user: userWithoutPassword,
-      accessToken,
-    }
+      password: data.password,
+    })
   },
 
   async createUser(data: RegisterData): Promise<User> {
