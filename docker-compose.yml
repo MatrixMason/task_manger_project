@@ -6,5 +6,8 @@ services:
       - '3000:3000'
     environment:
       - JWT_SECRET=your-secret-key
+      - NODE_ENV=production
+      - PORT=3000
+      - CORS_ORIGIN=https://konstanta-tech.ru,http://localhost:5173
     volumes:
       - ./db.json:/app/server/db.json
