@@ -11,7 +11,9 @@ const __dirname = dirname(__filename)
 
 const app = express()
 const PORT = process.env.PORT || 3000
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
+const JWT_SECRET =
+  process.env.JWT_SECRET ||
+  'be86733d2d11455d1942fb4d8a575c7a8a12a31487122e903f1587694af48de92d19cbdb75fc3d879d3da37933cdb11bf64b72356b10ff10e72c498788ab38ff'
 
 app.use(
   cors({
